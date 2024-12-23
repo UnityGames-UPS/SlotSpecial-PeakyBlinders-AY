@@ -71,7 +71,7 @@ public class SlotIconView : MonoBehaviour
         activeanimation.textureArray.Clear();
         activeanimation.textureArray.AddRange(animSprite);
         activeanimation.AnimationSpeed = animSprite.Count / 2 + 0.5f;
-
+        if(id <=8 || id >= 13)
         iconBorderImage.gameObject.SetActive(true);
         activeanimation.StartAnimation();
     }
@@ -87,7 +87,7 @@ public class SlotIconView : MonoBehaviour
 
     internal void SetParent(Transform paylineSymbolAnimPanel)
     {
-        if (id < 9 && id > 12)
+        if (id < 9 || id > 12)
         {
             iconBorderImage.gameObject.SetActive(true);
             // iconBg.SetActive(true);

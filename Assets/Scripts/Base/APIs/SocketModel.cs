@@ -59,8 +59,15 @@ public class InitGameData
 public class UIData
 {
     public List<Symbol> symbols { get; set; }
+    public List<SpecialSymbol> specialBonusSymbolMulipliers {get; set;}
+
 }
 
+[Serializable]
+public class SpecialSymbol{
+    public string name {get; set;}
+    public double value {get; set;}
+}
 
 [Serializable]
 public class BetData

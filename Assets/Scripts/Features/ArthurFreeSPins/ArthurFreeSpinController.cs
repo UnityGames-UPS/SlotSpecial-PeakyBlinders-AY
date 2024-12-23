@@ -25,26 +25,19 @@ public class ArthurFreeSpinController : MonoBehaviour
 
     Coroutine spin;
     internal Action<int, double> UpdateUI;
+    internal Action<int, GameObject> FreeSpinPopUP;
+    internal Action<GameObject> FreeSpinPopUpClose;
+    [SerializeField] GameObject arthurSpinBg;
 
 
-    // internal IEnumerator StartFP(IEnumerator StartSpin, IEnumerator StopSpin, Action<string, object> SendData, object data, GameObject originalReel, int count)
-    // {
-    //     yield return InitiateFreeSpins(originalReel);
-
-    //     for (int i = 0; i < count; i++)
-    //     {
-    //     yield return StartSpin;
-    //     SendData?.Invoke("message", data);
-    //     // yield return new WaitUntil(() => SocketController.isResultdone);
-    //     yield return new WaitForSeconds(0.3f);
-    //     yield return new WaitForSeconds(2f);
-    //     yield return StopSpin;
-    //     }
-
-    // }
+    [SerializeField] internal ThunderFreeSpinController thunderFP;
 
     internal IEnumerator StartFP(GameObject originalReel, int count, bool initiate = true)
     {
+        FreeSpinPopUP?.Invoke(count, arthurSpinBg);
+        yield return new WaitForSeconds(2);
+        FreeSpinPopUpClose?.Invoke(arthurSpinBg);
+
         if (initiate)
             yield return InitiateFreeSpins(originalReel);
 
@@ -63,12 +56,27 @@ public class ArthurFreeSpinController : MonoBehaviour
                 count = SocketModel.resultGameData.freeSpinCount;
                 int freeSpinAdded = count - prevFreeSpin;
 
+                FreeSpinPopUP?.Invoke(freeSpinAdded, null);
+                UpdateUI?.Invoke(count, -1);
+
                 yield return new WaitForSeconds(1.5f);
+                FreeSpinPopUpClose?.Invoke(null);
+
+            }
+
+            if (SocketModel.resultGameData.thunderSpinCount > 0)
+            {
+                if (spin != null)
+                    StopCoroutine(spin);
+
+                yield return thunderFP.StartFP(
+                froxenIndeces: SocketModel.resultGameData.frozenIndices,
+                count: SocketModel.resultGameData.thunderSpinCount);
 
             }
 
         }
-        
+
         originalReel.SetActive(true);
         psudoReel.SetActive(true);
 
@@ -170,6 +178,7 @@ public class ArthurFreeSpinController : MonoBehaviour
 
     IEnumerator PlayCutAnimation()
     {
+        blade.gameObject.SetActive(true);
         for (int j = 0; j < slotMatrix[0].slotImages.Count; j++)
         {
             blade.DOLocalMoveX(1600 * (j % 2 == 0 ? 1 : -1), 0.35f).OnComplete(() => blade.transform.localPosition += new Vector3(0, -225, 0));
@@ -186,6 +195,7 @@ public class ArthurFreeSpinController : MonoBehaviour
 
         }
         yield return new WaitForSeconds(0.5f);
+        blade.gameObject.SetActive(false);
         blade.transform.localPosition = new Vector3(-1600, 360, 0);
 
     }

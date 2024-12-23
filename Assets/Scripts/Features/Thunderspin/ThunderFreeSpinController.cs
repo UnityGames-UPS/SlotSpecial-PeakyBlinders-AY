@@ -9,35 +9,46 @@ public class ThunderFreeSpinController : MonoBehaviour
     [SerializeField] GameObject thunderSpinLayer;
     [SerializeField] Sprite coinBase;
     [SerializeField] Sprite noValue;
-
+    [SerializeField] internal List<Sprite> imageRef;
     float totalDelay;
 
-    internal Action<int, double> updateUI;
+    internal Action<int, double> UpdateUI;
     Coroutine Spin;
 
     internal Func<Action, Action, bool, bool, float, float, IEnumerator> SpinRoutine;
 
     [SerializeField] GameObject horizontalbar;
+
+    internal Action<int, GameObject> FreeSpinPopUP;
+    internal Action<GameObject> FreeSpinPopUpClose;
+
+    [SerializeField] GameObject thunderSpinBg;
     internal IEnumerator StartFP(List<List<double>> froxenIndeces, int count)
     {
-
+        FreeSpinPopUP?.Invoke(count, thunderSpinBg);
+        yield return new WaitForSeconds(2);
+        FreeSpinPopUpClose?.Invoke(thunderSpinBg);
         horizontalbar.SetActive(true);
         Initiate(froxenIndeces);
-        int i = 0;
-        while (i < count)
+        while (count > 0)
         {
+            count--;
+            UpdateUI?.Invoke(count, -1);
+
             Spin = StartCoroutine(SpinRoutine(null, CloseIcon, false, true, 0, totalDelay));
             yield return Spin;
             ResetIcon(false);
-            i++;
-            updateUI(count - i, 0);
             if (SocketModel.resultGameData.thunderSpinAdded)
             {
                 if (Spin != null)
                     StopCoroutine(Spin);
+                int prevFreeSpin = count;
                 count = SocketModel.resultGameData.thunderSpinCount;
-                i = 0;
-                updateUI(count, 0);
+                int freeSpinAdded = count - prevFreeSpin;
+                FreeSpinPopUP?.Invoke(freeSpinAdded, null);
+                UpdateUI(count, 0);
+                yield return new WaitForSeconds(1.5f);
+                FreeSpinPopUpClose?.Invoke(null);
             }
             if (SocketModel.resultGameData.isGrandPrize)
                 break;
@@ -57,9 +68,13 @@ public class ThunderFreeSpinController : MonoBehaviour
 
         for (int i = 0; i < froxenIndeces.Count; i++)
         {
-            SpinMatrix[(int)froxenIndeces[i][0]].row[(int)froxenIndeces[i][1]].image.sprite = coinBase;
+            Debug.Log(froxenIndeces[i].Count);
+            SpinMatrix[(int)froxenIndeces[i][0]].row[(int)froxenIndeces[i][1]].image.sprite = imageRef[(int)froxenIndeces[i][3]];
+            if((int)froxenIndeces[i][3]==13){
             SpinMatrix[(int)froxenIndeces[i][0]].row[(int)froxenIndeces[i][1]].coinText.text = froxenIndeces[i][2].ToString();
             SpinMatrix[(int)froxenIndeces[i][0]].row[(int)froxenIndeces[i][1]].coinText.gameObject.SetActive(true);
+
+            }
             SpinMatrix[(int)froxenIndeces[i][0]].row[(int)froxenIndeces[i][1]].image.transform.localPosition *= 0;
             SpinMatrix[(int)froxenIndeces[i][0]].row[(int)froxenIndeces[i][1]].hasValue = true;
 
@@ -81,10 +96,13 @@ public class ThunderFreeSpinController : MonoBehaviour
         {
             if (!SpinMatrix[(int)SocketModel.resultGameData.frozenIndices[i][0]].row[(int)SocketModel.resultGameData.frozenIndices[i][1]].hasValue)
             {
-                SpinMatrix[(int)SocketModel.resultGameData.frozenIndices[i][0]].row[(int)SocketModel.resultGameData.frozenIndices[i][1]].image.sprite = coinBase;
+                SpinMatrix[(int)SocketModel.resultGameData.frozenIndices[i][0]].row[(int)SocketModel.resultGameData.frozenIndices[i][1]].image.sprite = imageRef[(int)SocketModel.resultGameData.frozenIndices[i][3]];
                 SpinMatrix[(int)SocketModel.resultGameData.frozenIndices[i][0]].row[(int)SocketModel.resultGameData.frozenIndices[i][1]].hasValue = true;
-                SpinMatrix[(int)SocketModel.resultGameData.frozenIndices[i][0]].row[(int)SocketModel.resultGameData.frozenIndices[i][1]].coinText.gameObject.SetActive(true);
+                if((int)SocketModel.resultGameData.frozenIndices[i][3]==13){
+
                 SpinMatrix[(int)SocketModel.resultGameData.frozenIndices[i][0]].row[(int)SocketModel.resultGameData.frozenIndices[i][1]].coinText.text = SocketModel.resultGameData.frozenIndices[i][2].ToString();
+                SpinMatrix[(int)SocketModel.resultGameData.frozenIndices[i][0]].row[(int)SocketModel.resultGameData.frozenIndices[i][1]].coinText.gameObject.SetActive(true);
+                }
 
                 SpinMatrix[(int)SocketModel.resultGameData.frozenIndices[i][0]].row[(int)SocketModel.resultGameData.frozenIndices[i][1]].image.transform.DOLocalMoveY(0, 0.15f).SetEase(Ease.OutBounce);
                 yield return new WaitForSeconds(0.15f);
@@ -121,6 +139,7 @@ public class ThunderFreeSpinController : MonoBehaviour
                 {
                     SpinMatrix[i].row[j].image.sprite = noValue;
                     SpinMatrix[i].row[j].image.transform.localPosition = new Vector2(0, 225);
+                    SpinMatrix[i].row[j].hasValue=false;
                 }
                 else if (!SpinMatrix[i].row[j].hasValue)
                 {

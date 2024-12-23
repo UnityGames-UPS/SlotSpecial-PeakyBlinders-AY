@@ -250,6 +250,7 @@ public class SocketController : MonoBehaviour
             case "InitData":
                 {
                     SocketModel.uIData.symbols = resp["message"]["UIData"]["paylines"]["symbols"].ToObject<List<Symbol>>();
+                    SocketModel.uIData.specialBonusSymbolMulipliers=resp["message"]["GameData"]["specialBonusSymbolMulipliers"].ToObject<List<SpecialSymbol>>();
                     SocketModel.initGameData.Bets = resp["message"]["GameData"]["Bets"].ToObject<List<double>>();
                     SocketModel.initGameData.lineData=resp["message"]["GameData"]["linesApiData"].ToObject<List<List<int>>>();
                     OnInit?.Invoke();

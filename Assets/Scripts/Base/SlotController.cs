@@ -44,19 +44,19 @@ public class SlotController : MonoBehaviour
     [SerializeField] private float tweenHeight = 0;
     [SerializeField] private float initialPos;
 
-
+    [SerializeField] private GameObject[] border;
 
     private List<Tweener> alltweens = new List<Tweener>();
 
     [SerializeField] internal List<SlotIconView> animatingIcons = new List<SlotIconView>();
 
-    internal IEnumerator StartSpin()
+    internal IEnumerator StartSpin(bool turboMode,bool immediateStop)
     {
 
         for (int i = 0; i < Slot_Transform.Length; i++)
         {
             RespectMask(i);
-            InitializeTweening(Slot_Transform[i]);
+            InitializeTweening(Slot_Transform[i],turboMode,immediateStop);
             yield return new WaitForSeconds(0.15f);
 
         }
@@ -69,11 +69,11 @@ public class SlotController : MonoBehaviour
         {
             for (int i = 0; i < coins.Count; i++)
             {
-                slotMatrix[(int)coins[i][0]].slotImages[(int)coins[i][1]].SetCoin(coins[i][2]);
+                if (coins[i][3] == 13)
+                    slotMatrix[(int)coins[i][0]].slotImages[(int)coins[i][1]].SetCoin(coins[i][2]);
             }
         }
 
-        Debug.Log(JsonConvert.SerializeObject(resultData));
         for (int i = 0; i < resultData.Count; i++)
         {
             for (int j = 0; j < resultData[i].Count; j++)
@@ -83,7 +83,7 @@ public class SlotController : MonoBehaviour
         }
     }
 
-    private void RespectMask(int i)
+    internal void RespectMask(int i)
     {
 
         for (int j = 0; j < slotMatrix[i].slotImages.Count; j++)
@@ -92,6 +92,7 @@ public class SlotController : MonoBehaviour
         }
         // matrixRowCount++;
     }
+
 
     private void IgnoreMask(int i)
     {
@@ -104,18 +105,57 @@ public class SlotController : MonoBehaviour
         // matrixRowCount++;
 
     }
-    internal IEnumerator StopSpin(bool ignore = true, Action playStopSound=null)
+    internal IEnumerator StopSpin(bool ignore = true, Action playStopSound = null, bool isFreeSpin = false, bool immediateStop=false,bool turboMode=false)
     {
+        GameObject activeBorder = null;
 
         for (int i = 0; i < Slot_Transform.Length; i++)
         {
-            StopTweening(Slot_Transform[i], i);
-            yield return new WaitForSeconds(0.1f);
+            if (activeBorder != null)
+                activeBorder.SetActive(false);
+            // if (increasePlayDuration > 0 )
+            // {
+            //     yield return new WaitForSeconds(increasePlayDuration);
+            //     increasePlayDuration = 0;
+            // }
+
+
+            StopTweening(Slot_Transform[i], i,immediateStop,turboMode);
             playStopSound?.Invoke();
             if (ignore)
                 IgnoreMask(i);
 
+            if (!isFreeSpin && !immediateStop && !turboMode)
+            {
+                for (int j = 0; j < SocketModel.resultGameData.ResultReel.Count; j++)
+                {
+                    if (SocketModel.resultGameData.ResultReel[j][i] >= 13)
+                    {
+
+                        if (i + 1 < border.Length)
+                        {
+                            Debug.Log("eneterd");
+                            border[i + 1].transform.localScale = new Vector3(1, 0, 1);
+                            border[i + 1].SetActive(true);
+                            border[i + 1].transform.DOScaleY(1, 0.2f);
+                            activeBorder = border[i + 1];
+                            yield return new WaitForSeconds(1f);
+                            break;
+                        }
+
+
+                    }
+                }
+
+            }
+
+            if(!immediateStop)
+            yield return new WaitForSeconds(0.1f);
+
+
+
         }
+        if(!immediateStop)
         yield return new WaitForSeconds(0.5f);
 
         KillAllTweens();
@@ -191,6 +231,7 @@ public class SlotController : MonoBehaviour
 
             int[] pos = iconPos[i].Split(',').Select(int.Parse).ToArray();
             slotMatrix[pos[0]].slotImages[pos[1]].SetParent(paylineSymbolAnimPanel);
+
             // if (!animatingIcons.Any(x => x.pos == slotMatrix[pos[0]].slotImages[pos[1]].pos))
             //     animatingIcons.Add(slotMatrix[pos[0]].slotImages[pos[1]]);
         }
@@ -225,21 +266,31 @@ public class SlotController : MonoBehaviour
     }
 
     #region TweeningCode
-    private void InitializeTweening(Transform slotTransform)
+    private void InitializeTweening(Transform slotTransform,bool turboMode,bool immediateStop)
     {
-        Tweener tweener = slotTransform.DOLocalMoveY(-tweenHeight, 0.4f).SetLoops(-1, LoopType.Restart).SetDelay(0).SetEase(Ease.Linear);
+        float delay=0.4f;
+        if(turboMode)
+        delay=0.2f;
+        if(immediateStop)
+        delay=0.1f;
+        Tweener tweener = slotTransform.DOLocalMoveY(-tweenHeight, delay).SetLoops(-1, LoopType.Restart).SetDelay(0).SetEase(Ease.Linear);
         alltweens.Add(tweener);
     }
 
-    private void StopTweening(Transform slotTransform, int index)
+    private void StopTweening(Transform slotTransform, int index, bool immediateStop,bool turboMode)
     {
+
+        float delay=0.3f;
+
+        if(turboMode)
+        delay=0.1f;
+        if(immediateStop)
+        delay=0;
+
         alltweens[index].Pause();
         slotTransform.localPosition = new Vector2(slotTransform.localPosition.x, initialPos + 265);
-        alltweens[index] = slotTransform.DOLocalMoveY(initialPos, 0.2f).SetEase(Ease.OutElastic);
-
+        alltweens[index] = slotTransform.DOLocalMoveY(initialPos, delay).SetEase(Ease.OutElastic);
     }
-
-
     private void KillAllTweens()
     {
         for (int i = 0; i < alltweens.Count; i++)
