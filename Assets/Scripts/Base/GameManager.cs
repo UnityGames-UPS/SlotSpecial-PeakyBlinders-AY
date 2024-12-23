@@ -80,6 +80,7 @@ public class GameManager : MonoBehaviour
         SetButton(SlotStart_Button, ExecuteSpin, true);
 
         CancelWinAnim.onClick.AddListener(() => StopWinAnimImmediate());
+        TurboButton.onClick.AddListener(()=>turboMode=!turboMode);
 
         for (int i = 0; i < AutoSpinsButtons.Length; i++)
         {
@@ -558,6 +559,7 @@ public class GameManager : MonoBehaviour
         if (AutoSpinPopup_Button) AutoSpinPopup_Button.interactable = toggle;
         if (Bet_Button) Bet_Button.interactable = toggle;
         uIManager.Settings_Button.interactable = toggle;
+        if(TurboButton) TurboButton.interactable=toggle;
     }
 
     private void OnBetChange(int index)
