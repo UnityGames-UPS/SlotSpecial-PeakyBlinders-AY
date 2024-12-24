@@ -78,6 +78,7 @@ public class TommyFPController : MonoBehaviour
                 count: SocketModel.resultGameData.thunderSpinCount);
 
             }
+            yield return new WaitForSeconds(0.5f);
 
         }
 

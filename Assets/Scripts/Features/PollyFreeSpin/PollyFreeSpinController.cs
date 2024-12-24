@@ -71,6 +71,7 @@ public class PollyFreeSpinController : MonoBehaviour
 
             }
 
+            
         }
         border.parent.gameObject.SetActive(false);
 

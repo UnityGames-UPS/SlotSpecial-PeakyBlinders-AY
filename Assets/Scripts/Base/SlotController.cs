@@ -113,12 +113,6 @@ public class SlotController : MonoBehaviour
         {
             if (activeBorder != null)
                 activeBorder.SetActive(false);
-            // if (increasePlayDuration > 0 )
-            // {
-            //     yield return new WaitForSeconds(increasePlayDuration);
-            //     increasePlayDuration = 0;
-            // }
-
 
             StopTweening(Slot_Transform[i], i,immediateStop,turboMode);
             playStopSound?.Invoke();
@@ -149,14 +143,19 @@ public class SlotController : MonoBehaviour
 
             }
 
-            if(!immediateStop)
+            if(turboMode)
             yield return new WaitForSeconds(0.1f);
+            else if(!immediateStop)
+            yield return new WaitForSeconds(0.2f);
 
 
 
         }
-        if(!immediateStop)
-        yield return new WaitForSeconds(0.5f);
+        if(immediateStop)
+        yield return new WaitForSeconds(0.35f);
+        else
+        yield return new WaitForSeconds(0.1f);
+
 
         KillAllTweens();
 
@@ -280,16 +279,17 @@ public class SlotController : MonoBehaviour
     private void StopTweening(Transform slotTransform, int index, bool immediateStop,bool turboMode)
     {
 
-        float delay=0.3f;
+        float delay=0.2f;
 
         if(turboMode)
         delay=0.1f;
+
         if(immediateStop)
-        delay=0;
+        delay=0f;
 
         alltweens[index].Pause();
         slotTransform.localPosition = new Vector2(slotTransform.localPosition.x, initialPos + 265);
-        alltweens[index] = slotTransform.DOLocalMoveY(initialPos, delay).SetEase(Ease.OutElastic);
+        alltweens[index] = slotTransform.DOLocalMoveY(initialPos, delay).SetEase(Ease.OutFlash);
     }
     private void KillAllTweens()
     {

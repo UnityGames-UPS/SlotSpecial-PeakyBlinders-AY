@@ -7,11 +7,11 @@ public class ThunderFreeSpinController : MonoBehaviour
 {
     [SerializeField] List<rows> SpinMatrix;
     [SerializeField] GameObject thunderSpinLayer;
-    [SerializeField] Sprite coinBase;
     [SerializeField] Sprite noValue;
     [SerializeField] internal List<Sprite> imageRef;
-    float totalDelay;
 
+    [SerializeField] List<Sprite> animSprite;
+    float totalDelay;
     internal Action<int, double> UpdateUI;
     Coroutine Spin;
 
@@ -52,7 +52,8 @@ public class ThunderFreeSpinController : MonoBehaviour
             }
             if (SocketModel.resultGameData.isGrandPrize)
                 break;
-
+            yield return new WaitForSeconds(0.5f);
+            
         }
         thunderSpinLayer.SetActive(false);
         ResetIcon(true);
@@ -65,18 +66,24 @@ public class ThunderFreeSpinController : MonoBehaviour
 
     void Initiate(List<List<double>> froxenIndeces)
     {
+        ThunderSpinIconView icon = null;
 
         for (int i = 0; i < froxenIndeces.Count; i++)
         {
             Debug.Log(froxenIndeces[i].Count);
-            SpinMatrix[(int)froxenIndeces[i][0]].row[(int)froxenIndeces[i][1]].image.sprite = imageRef[(int)froxenIndeces[i][3]];
-            if((int)froxenIndeces[i][3]==13){
-            SpinMatrix[(int)froxenIndeces[i][0]].row[(int)froxenIndeces[i][1]].coinText.text = froxenIndeces[i][2].ToString();
-            SpinMatrix[(int)froxenIndeces[i][0]].row[(int)froxenIndeces[i][1]].coinText.gameObject.SetActive(true);
+            icon = SpinMatrix[(int)froxenIndeces[i][0]].row[(int)froxenIndeces[i][1]];
+            icon.image.sprite = imageRef[(int)froxenIndeces[i][3]];
 
+            if ((int)froxenIndeces[i][3] == 13)
+            {
+                icon.coinText.text = froxenIndeces[i][2].ToString();
+                icon.coinText.gameObject.SetActive(true);
             }
-            SpinMatrix[(int)froxenIndeces[i][0]].row[(int)froxenIndeces[i][1]].image.transform.localPosition *= 0;
-            SpinMatrix[(int)froxenIndeces[i][0]].row[(int)froxenIndeces[i][1]].hasValue = true;
+            
+            icon.image.transform.localPosition *= 0;
+            icon.hasValue = true;
+            icon.StartAnim(animSprite);
+
 
         }
         thunderSpinLayer.SetActive(true);
@@ -91,21 +98,27 @@ public class ThunderFreeSpinController : MonoBehaviour
     }
     IEnumerator closeSlotIcon()
     {
+        ThunderSpinIconView icon = null;
 
         for (int i = 0; i < SocketModel.resultGameData.frozenIndices.Count; i++)
         {
-            if (!SpinMatrix[(int)SocketModel.resultGameData.frozenIndices[i][0]].row[(int)SocketModel.resultGameData.frozenIndices[i][1]].hasValue)
-            {
-                SpinMatrix[(int)SocketModel.resultGameData.frozenIndices[i][0]].row[(int)SocketModel.resultGameData.frozenIndices[i][1]].image.sprite = imageRef[(int)SocketModel.resultGameData.frozenIndices[i][3]];
-                SpinMatrix[(int)SocketModel.resultGameData.frozenIndices[i][0]].row[(int)SocketModel.resultGameData.frozenIndices[i][1]].hasValue = true;
-                if((int)SocketModel.resultGameData.frozenIndices[i][3]==13){
+            icon = SpinMatrix[(int)SocketModel.resultGameData.frozenIndices[i][0]].row[(int)SocketModel.resultGameData.frozenIndices[i][1]];
 
-                SpinMatrix[(int)SocketModel.resultGameData.frozenIndices[i][0]].row[(int)SocketModel.resultGameData.frozenIndices[i][1]].coinText.text = SocketModel.resultGameData.frozenIndices[i][2].ToString();
-                SpinMatrix[(int)SocketModel.resultGameData.frozenIndices[i][0]].row[(int)SocketModel.resultGameData.frozenIndices[i][1]].coinText.gameObject.SetActive(true);
+            if (!icon.hasValue)
+            {
+                icon.image.sprite = imageRef[(int)SocketModel.resultGameData.frozenIndices[i][3]];
+                icon.hasValue = true;
+
+                if ((int)SocketModel.resultGameData.frozenIndices[i][3] == 13)
+                {
+
+                    icon.coinText.text = SocketModel.resultGameData.frozenIndices[i][2].ToString();
+                    icon.coinText.gameObject.SetActive(true);
                 }
 
-                SpinMatrix[(int)SocketModel.resultGameData.frozenIndices[i][0]].row[(int)SocketModel.resultGameData.frozenIndices[i][1]].image.transform.DOLocalMoveY(0, 0.15f).SetEase(Ease.OutBounce);
+                icon.image.transform.DOLocalMoveY(0, 0.15f).SetEase(Ease.OutBounce);
                 yield return new WaitForSeconds(0.15f);
+                icon.StartAnim(animSprite);
                 totalDelay++;
             }
         }
@@ -139,7 +152,9 @@ public class ThunderFreeSpinController : MonoBehaviour
                 {
                     SpinMatrix[i].row[j].image.sprite = noValue;
                     SpinMatrix[i].row[j].image.transform.localPosition = new Vector2(0, 225);
-                    SpinMatrix[i].row[j].hasValue=false;
+                    SpinMatrix[i].row[j].hasValue = false;
+                    SpinMatrix[i].row[j].StopAnim();
+
                 }
                 else if (!SpinMatrix[i].row[j].hasValue)
                 {
