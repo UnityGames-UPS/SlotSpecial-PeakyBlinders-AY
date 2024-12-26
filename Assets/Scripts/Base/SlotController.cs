@@ -105,7 +105,7 @@ public class SlotController : MonoBehaviour
         // matrixRowCount++;
 
     }
-    internal IEnumerator StopSpin(bool ignore = true, Action playStopSound = null, bool isFreeSpin = false, bool immediateStop=false,bool turboMode=false)
+    internal IEnumerator StopSpin(bool ignore = true, Action playStopSound = null, bool isFreeSpin = false,bool turboMode=false)
     {
         GameObject activeBorder = null;
 
@@ -114,12 +114,14 @@ public class SlotController : MonoBehaviour
             if (activeBorder != null)
                 activeBorder.SetActive(false);
 
-            StopTweening(Slot_Transform[i], i,immediateStop,turboMode);
+            StopTweening(Slot_Transform[i], i,GameManager.ImmediateStop,turboMode);
+            if(!GameManager.ImmediateStop)
             playStopSound?.Invoke();
+
             if (ignore)
                 IgnoreMask(i);
 
-            if (!isFreeSpin && !immediateStop && !turboMode)
+            if (!isFreeSpin && !GameManager.ImmediateStop && !turboMode)
             {
                 for (int j = 0; j < SocketModel.resultGameData.ResultReel.Count; j++)
                 {
@@ -143,18 +145,22 @@ public class SlotController : MonoBehaviour
 
             }
 
+            if(!GameManager.ImmediateStop){
+
             if(turboMode)
             yield return new WaitForSeconds(0.1f);
-            else if(!immediateStop)
+            else
             yield return new WaitForSeconds(0.2f);
-
+            }
 
 
         }
-        if(immediateStop)
-        yield return new WaitForSeconds(0.35f);
-        else
-        yield return new WaitForSeconds(0.1f);
+
+        if(GameManager.ImmediateStop){
+
+        playStopSound?.Invoke();
+        yield return new WaitForSeconds(0.15f);
+        }
 
 
         KillAllTweens();

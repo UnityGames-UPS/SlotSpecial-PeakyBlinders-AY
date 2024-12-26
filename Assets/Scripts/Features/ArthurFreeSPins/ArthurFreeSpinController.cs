@@ -75,6 +75,8 @@ public class ArthurFreeSpinController : MonoBehaviour
 
             }
 
+            if(SocketModel.playerData.currentWining>0)
+            yield return new WaitForSeconds(3f);
         }
 
         originalReel.SetActive(true);

@@ -41,6 +41,7 @@ public class UIManager : MonoBehaviour
     [Header("Paytable Texts")]
     [SerializeField] private TMP_Text[] SymbolsText;
     [SerializeField] private TMP_Text[] BonusSymbolsText;
+    [SerializeField] private TMP_Text[] FreeSpinsText;
     [SerializeField] private TMP_Text Wild_Text;
     [SerializeField] private TMP_Text[] mini_grand_text;
 
@@ -118,6 +119,9 @@ public class UIManager : MonoBehaviour
     internal Action OnExit;
 
     Tweener normalWinTween;
+
+    private double[] mini_GrandMultiplier= new double[4];
+
     private void Awake()
     {
         //if (spalsh_screen) spalsh_screen.SetActive(true);
@@ -158,6 +162,7 @@ public class UIManager : MonoBehaviour
         isSound = false;
         ToggleMusic();
         ToggleSound();
+        betButton.transform.DOScale(1.1f,1f).SetLoops(-1,LoopType.Yoyo);
     }
 
     private void SetButton(Button button, Action action)
@@ -236,7 +241,7 @@ public class UIManager : MonoBehaviour
         OpenPopup(ADPopup_Object);
     }
 
-    internal void PopulateSymbolsPayout(UIData uIData)
+    internal void PopulateSymbolsPayout(UIData uIData,double currentBetPerLine)
     {
         string text;
         for (int i = 0; i < SymbolsText.Length; i++)
@@ -247,37 +252,64 @@ public class UIManager : MonoBehaviour
                 text += $"{5 - j}x - {uIData.symbols[i].Multiplier[j][0]}x \n";
             }
             SymbolsText[i].text = text;
-
         }
 
+            FreeSpinsText[0].text=uIData.symbols[13].description.ToString();
+            FreeSpinsText[1].text=uIData.symbols[10].description.ToString();
+            FreeSpinsText[2].text=uIData.symbols[12].description.ToString();
+            FreeSpinsText[3].text=uIData.symbols[11].description.ToString();
+
         // Wild_Text.text = uIData.symbols[10].description.ToString();
+
+        PopulateSpecialSymbols(uIData, currentBetPerLine);
+
+    }
+
+    private void PopulateSpecialSymbols(UIData uIData, double currentBetPerLine)
+    {
+        string text="";
 
         for (int i = 0; i < uIData.specialBonusSymbolMulipliers.Count; i++)
         {
             text = "";
             if (uIData.specialBonusSymbolMulipliers[i].name == "Mini Multiplier")
             {
-                mini_grand_text[0].text = uIData.specialBonusSymbolMulipliers[i].value.ToString();
+                mini_grand_text[0].text = (uIData.specialBonusSymbolMulipliers[i].value * currentBetPerLine).ToString();
+                mini_GrandMultiplier[0]=uIData.specialBonusSymbolMulipliers[i].value;
             }
             else if (uIData.specialBonusSymbolMulipliers[i].name == "Major Multiplier")
             {
-                mini_grand_text[1].text = uIData.specialBonusSymbolMulipliers[i].value.ToString();
+                mini_grand_text[1].text = (uIData.specialBonusSymbolMulipliers[i].value * currentBetPerLine).ToString();
+                mini_GrandMultiplier[1]=uIData.specialBonusSymbolMulipliers[i].value;
+
             }
             else if (uIData.specialBonusSymbolMulipliers[i].name == "Mega Multiplier")
             {
-                mini_grand_text[2].text = uIData.specialBonusSymbolMulipliers[i].value.ToString();
+                mini_grand_text[2].text = (uIData.specialBonusSymbolMulipliers[i].value * currentBetPerLine).ToString();
+                mini_GrandMultiplier[2]=uIData.specialBonusSymbolMulipliers[i].value;
+
             }
             else if (uIData.specialBonusSymbolMulipliers[i].name == "Grand Multiplier")
             {
-                mini_grand_text[3].text = uIData.specialBonusSymbolMulipliers[i].value.ToString();
-            }
+                mini_grand_text[3].text = (uIData.specialBonusSymbolMulipliers[i].value * currentBetPerLine).ToString();
+                mini_GrandMultiplier[3]=uIData.specialBonusSymbolMulipliers[i].value;
 
+            }
+        }
+
+    }
+    private void PopulateSpecialSymbols( double betPerLine)
+    {
+
+        for (int i = 0; i < mini_grand_text.Length; i++)
+        {
+                mini_grand_text[i].text = (betPerLine * mini_GrandMultiplier[i]).ToString();
 
         }
 
     }
 
-    internal void PopulateBets(List<double> bets, Action<int> onclick)
+    internal void PopulateBets(List<double> bets,int totalLines, Action<int> onclick)
     {
 
         for (int i = 0; i < betValueButtons.Length; i++)
@@ -285,10 +317,11 @@ public class UIManager : MonoBehaviour
             if (i < bets.Count)
             {
                 int index = i;
-                betTexts[index].text = bets[index].ToString();
+                betTexts[index].text = (bets[index]*totalLines ).ToString();
                 betValueButtons[index].onClick.AddListener(() =>
                 {
                     onclick(index);
+                    PopulateSpecialSymbols(bets[index]);
                     ClosePopup();
                 });
             }

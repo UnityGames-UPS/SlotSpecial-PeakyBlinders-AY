@@ -78,7 +78,8 @@ public class TommyFPController : MonoBehaviour
                 count: SocketModel.resultGameData.thunderSpinCount);
 
             }
-            yield return new WaitForSeconds(0.5f);
+            if(SocketModel.playerData.currentWining>0)
+            yield return new WaitForSeconds(3f);
 
         }
 

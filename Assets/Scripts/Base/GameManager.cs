@@ -23,10 +23,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Button Bet_Button;
     [SerializeField] private TMP_Text totalBet_text;
     [SerializeField] private bool isSpinning;
+    [SerializeField] private Button infoButton;
     [SerializeField] private Transform paylineSymbolAnimPanel;
     [SerializeField] private Button StopSpinButton;
     [SerializeField] private Button TurboButton;
-    [SerializeField] private bool ImmediateStop;
+    [SerializeField] private GameObject turboAnim;
+    [SerializeField] internal static bool ImmediateStop;
     [SerializeField] private bool turboMode;
     [SerializeField] private Sprite turboActive;
     [SerializeField] private Sprite turboInActive;
@@ -77,6 +79,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] int autoSpinLeft;
 
     [SerializeField] bool autoSpinShouldContinue;
+
+    [SerializeField] private int totalLies=20;
     void Start()
     {
         SetButton(SlotStart_Button, ExecuteSpin, true);
@@ -175,10 +179,17 @@ public class GameManager : MonoBehaviour
 
     void ToggleTurboMode(){
         turboMode = !turboMode;
-        if(turboMode)
+        if(turboMode){
         TurboButton.image.sprite=turboActive;
-        else
+        turboAnim.SetActive(true);
+
+        }
+        else{
         TurboButton.image.sprite=turboInActive;
+        turboAnim.SetActive(false);
+
+
+        }
 
 
     }
@@ -188,18 +199,19 @@ public class GameManager : MonoBehaviour
         {
             initiated = true;
             betCounter = 0;
-            currentTotalBet = SocketModel.initGameData.Bets[betCounter];
+            totalLies=SocketModel.initGameData.lineData.Count;
+            currentTotalBet = SocketModel.initGameData.Bets[betCounter]*totalLies;
             currentBalance = SocketModel.playerData.Balance;
             payLineController.paylines.AddRange(SocketModel.initGameData.lineData);
             if (totalBet_text) totalBet_text.text = currentTotalBet.ToString();
             uIManager.UpdatePlayerInfo(SocketModel.playerData);
-            uIManager.PopulateSymbolsPayout(SocketModel.uIData);
-            uIManager.PopulateBets(SocketModel.initGameData.Bets, OnBetChange);
+            uIManager.PopulateSymbolsPayout(SocketModel.uIData,SocketModel.initGameData.Bets[betCounter]);
+            uIManager.PopulateBets(SocketModel.initGameData.Bets,totalLies, OnBetChange);
             Application.ExternalCall("window.parent.postMessage", "OnEnter", "*");
         }
         else
         {
-            uIManager.PopulateSymbolsPayout(SocketModel.uIData);
+            uIManager.PopulateSymbolsPayout(SocketModel.uIData,totalLies);
         }
 
 
@@ -279,9 +291,9 @@ public class GameManager : MonoBehaviour
             yield return SpinRoutine();
 
             if (TurboButton)
-                yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(3f);
             else
-                yield return new WaitForSeconds(2f);
+                yield return new WaitForSeconds(4f);
 
 
         }
@@ -419,6 +431,7 @@ public class GameManager : MonoBehaviour
         // audioController.PlayButtonAudio("spin");
         isSpinning = true;
         winIterationCount = 0;
+        audioController.StopWLAaudio();
         paylineSymbolAnimPanel.gameObject.SetActive(false);
         if (symbolAnim != null)
             StopCoroutine(symbolAnim);
@@ -443,7 +456,7 @@ public class GameManager : MonoBehaviour
     {
         if(!isAutoSpin && !isFreeSpin)
         StopSpinButton.gameObject.SetActive(true);
-        var spinData = new { data = new { currentBet = betCounter, currentLines = 1, spins = 1 }, id = "SPIN" };
+        var spinData = new { data = new { currentBet = betCounter, currentLines = 20, spins = 1 }, id = "SPIN" };
         socketController.SendData("message", spinData);
 
         if (playBeforeStart)
@@ -484,7 +497,7 @@ public class GameManager : MonoBehaviour
         yield return slotManager.StopSpin(ignore: !thunderFreeSpins,
         playStopSound: audioController.PlaySpinStopAudio,
         isFreeSpin: isFreeSpin,
-        immediateStop: ImmediateStop, turboMode: turboMode);
+         turboMode: turboMode);
 
         if (!playBeforeEnd)
         {
@@ -511,8 +524,7 @@ public class GameManager : MonoBehaviour
 
             CheckWinPopups(SocketModel.playerData.currentWining);
             uIManager.NormalWinAnimation();
-            yield return new WaitForSeconds(0.5f);
-            audioController.StopWLAaudio();
+            // yield return new WaitForSeconds(1f);
 
         }
         if (isFreeSpin)
@@ -565,7 +577,7 @@ public class GameManager : MonoBehaviour
         if (AutoSpinPopup_Button) AutoSpinPopup_Button.interactable = toggle;
         if (Bet_Button) Bet_Button.interactable = toggle;
         uIManager.Settings_Button.interactable = toggle;
-        if (TurboButton) TurboButton.interactable = toggle;
+        if (infoButton) infoButton.interactable = toggle;
     }
 
     private void OnBetChange(int index)
@@ -574,7 +586,7 @@ public class GameManager : MonoBehaviour
 
         Debug.Log(index);
         betCounter = index;
-        currentTotalBet = SocketModel.initGameData.Bets[betCounter];
+        currentTotalBet = SocketModel.initGameData.Bets[betCounter]*totalLies;
         if (totalBet_text) totalBet_text.text = currentTotalBet.ToString();
         if (currentBalance < currentTotalBet)
             uIManager.LowBalPopup();
@@ -589,25 +601,29 @@ public class GameManager : MonoBehaviour
             StopCoroutine(winAnim);
         uIManager.ClosePopup();
 
-        if (amount >= currentTotalBet * 5 && amount < currentTotalBet * 7.5)
+        if (amount >= currentTotalBet * 10 && amount < currentTotalBet * 15)
         {
             uIManager.EnableWinPopUp(1);
             winAnim = StartCoroutine(uIManager.WinTextAnim(SocketModel.playerData.currentWining));
-            audioController.PlayWLAudio();
+            audioController.PlayWLAudio("big");
+
 
         }
-        else if (amount >= currentTotalBet * 7.5 && amount < currentTotalBet * 10)
+        else if (amount >= currentTotalBet * 15 && amount < currentTotalBet * 20)
         {
             uIManager.EnableWinPopUp(2);
             winAnim = StartCoroutine(uIManager.WinTextAnim(SocketModel.playerData.currentWining));
             audioController.PlayWLAudio("big");
 
         }
-        else if (amount >= currentTotalBet * 10)
+        else if (amount >= currentTotalBet * 20)
         {
             uIManager.EnableWinPopUp(3);
             winAnim = StartCoroutine(uIManager.WinTextAnim(SocketModel.playerData.currentWining));
             audioController.PlayWLAudio("mega");
+
+        }else{
+            audioController.PlayWLAudio();
 
         }
 
