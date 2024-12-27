@@ -50,14 +50,18 @@ public class SlotController : MonoBehaviour
 
     [SerializeField] internal List<SlotIconView> animatingIcons = new List<SlotIconView>();
 
-    internal IEnumerator StartSpin(bool turboMode,bool immediateStop)
+    internal IEnumerator StartSpin(bool turboMode, bool immediateStop)
     {
 
         for (int i = 0; i < Slot_Transform.Length; i++)
         {
             RespectMask(i);
-            InitializeTweening(Slot_Transform[i],turboMode,immediateStop);
-            yield return new WaitForSeconds(0.15f);
+            InitializeTweening(Slot_Transform[i], turboMode, GameManager.ImmediateStop);
+            if (GameManager.ImmediateStop)
+                yield return new WaitForSeconds(0.00f);
+            else
+                yield return new WaitForSeconds(0.15f);
+
 
         }
     }
@@ -105,7 +109,7 @@ public class SlotController : MonoBehaviour
         // matrixRowCount++;
 
     }
-    internal IEnumerator StopSpin(bool ignore = true, Action playStopSound = null, bool isFreeSpin = false,bool turboMode=false)
+    internal IEnumerator StopSpin(bool ignore = true, Action playStopSound = null, bool isFreeSpin = false, bool turboMode = false)
     {
         GameObject activeBorder = null;
 
@@ -114,9 +118,9 @@ public class SlotController : MonoBehaviour
             if (activeBorder != null)
                 activeBorder.SetActive(false);
 
-            StopTweening(Slot_Transform[i], i,GameManager.ImmediateStop,turboMode);
-            if(!GameManager.ImmediateStop)
-            playStopSound?.Invoke();
+            StopTweening(Slot_Transform[i], i, GameManager.ImmediateStop, turboMode);
+            if (!GameManager.ImmediateStop)
+                playStopSound?.Invoke();
 
             if (ignore)
                 IgnoreMask(i);
@@ -145,21 +149,23 @@ public class SlotController : MonoBehaviour
 
             }
 
-            if(!GameManager.ImmediateStop){
+            if (!GameManager.ImmediateStop)
+            {
 
-            if(turboMode)
-            yield return new WaitForSeconds(0.1f);
-            else
-            yield return new WaitForSeconds(0.2f);
+                if (turboMode)
+                    yield return new WaitForSeconds(0.1f);
+                else
+                    yield return new WaitForSeconds(0.2f);
             }
 
 
         }
 
-        if(GameManager.ImmediateStop){
+        if (GameManager.ImmediateStop)
+        {
 
-        playStopSound?.Invoke();
-        yield return new WaitForSeconds(0.15f);
+            playStopSound?.Invoke();
+            yield return new WaitForSeconds(0.15f);
         }
 
 
@@ -271,27 +277,27 @@ public class SlotController : MonoBehaviour
     }
 
     #region TweeningCode
-    private void InitializeTweening(Transform slotTransform,bool turboMode,bool immediateStop)
+    private void InitializeTweening(Transform slotTransform, bool turboMode, bool immediateStop)
     {
-        float delay=0.4f;
-        if(turboMode)
-        delay=0.2f;
-        if(immediateStop)
-        delay=0.1f;
+        float delay = 0.4f;
+        if (turboMode)
+            delay = 0.2f;
+        // if(immediateStop)
+        // delay=0.05f;
         Tweener tweener = slotTransform.DOLocalMoveY(-tweenHeight, delay).SetLoops(-1, LoopType.Restart).SetDelay(0).SetEase(Ease.Linear);
         alltweens.Add(tweener);
     }
 
-    private void StopTweening(Transform slotTransform, int index, bool immediateStop,bool turboMode)
+    private void StopTweening(Transform slotTransform, int index, bool immediateStop, bool turboMode)
     {
 
-        float delay=0.2f;
+        float delay = 0.2f;
 
-        if(turboMode)
-        delay=0.1f;
+        if (turboMode)
+            delay = 0.1f;
 
-        if(immediateStop)
-        delay=0f;
+        if (immediateStop)
+            delay = 0f;
 
         alltweens[index].Pause();
         slotTransform.localPosition = new Vector2(slotTransform.localPosition.x, initialPos + 265);

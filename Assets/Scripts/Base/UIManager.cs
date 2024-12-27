@@ -258,8 +258,7 @@ public class UIManager : MonoBehaviour
             FreeSpinsText[1].text=uIData.symbols[10].description.ToString();
             FreeSpinsText[2].text=uIData.symbols[12].description.ToString();
             FreeSpinsText[3].text=uIData.symbols[11].description.ToString();
-
-        // Wild_Text.text = uIData.symbols[10].description.ToString();
+            Wild_Text.text = uIData.symbols[8].description.ToString();
 
         PopulateSpecialSymbols(uIData, currentBetPerLine);
 

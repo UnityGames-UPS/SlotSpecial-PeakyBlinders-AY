@@ -45,8 +45,8 @@ public class ThunderFreeSpinController : MonoBehaviour
                 int prevFreeSpin = count;
                 count = SocketModel.resultGameData.thunderSpinCount;
                 int freeSpinAdded = count - prevFreeSpin;
+                UpdateUI?.Invoke(count, -1);
                 FreeSpinPopUP?.Invoke(freeSpinAdded, null);
-                UpdateUI(count, 0);
                 yield return new WaitForSeconds(1.5f);
                 FreeSpinPopUpClose?.Invoke(null);
             }

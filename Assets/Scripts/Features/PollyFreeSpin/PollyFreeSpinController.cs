@@ -52,15 +52,15 @@ public class PollyFreeSpinController : MonoBehaviour
                 int prevFreeSpin = count;
                 count = SocketModel.resultGameData.freeSpinCount;
                 int freeSpinAdded = count - prevFreeSpin;
+                UpdateUI?.Invoke(count, -1);
                 FreeSpinPopUP?.Invoke(freeSpinAdded, null);
-                UpdateUI?.Invoke(count,-1);
                 yield return new WaitForSeconds(1.5f);
                 FreeSpinPopUpClose?.Invoke(null);
 
 
             }
 
-                        if (SocketModel.resultGameData.thunderSpinCount > 0)
+            if (SocketModel.resultGameData.thunderSpinCount > 0)
             {
                 if (spin != null)
                     StopCoroutine(spin);
@@ -71,9 +71,9 @@ public class PollyFreeSpinController : MonoBehaviour
 
             }
 
-            if(SocketModel.playerData.currentWining>0)
-            yield return new WaitForSeconds(3f);
-            
+            if (SocketModel.playerData.currentWining > 0)
+                yield return new WaitForSeconds(3f);
+
         }
         border.parent.gameObject.SetActive(false);
 
@@ -81,6 +81,9 @@ public class PollyFreeSpinController : MonoBehaviour
     internal void SetBorder()
     {
         int colIndex = FindColIndex();
+        if (colIndex < 0)
+            return;
+
         border.transform.localPosition = originalPos;
         border.transform.localPosition += new Vector3((noOfColumns - 1) * 132 + colIndex * 267.5f, 0);
         border.sizeDelta = new Vector2(274 * noOfColumns + (63 * 2), 820);
@@ -111,14 +114,20 @@ public class PollyFreeSpinController : MonoBehaviour
     private int FindColIndex()
     {
         int index = -1;
-        for (int i = 0; i < SocketModel.resultGameData.ResultReel[0].Count; i++)
+
+        List<string> convertedmatrix = Helper.Convert2dToLinearMatrix(SocketModel.resultGameData.ResultReel);
+
+        for (int i = 0; i < convertedmatrix.Count; i++)
         {
-            if (i + 2 < SocketModel.resultGameData.ResultReel[0].Count)
+            if (i + 2 < convertedmatrix.Count)
             {
 
-                if (SocketModel.resultGameData.ResultReel[0][i] == SocketModel.resultGameData.ResultReel[0][i + 1] && SocketModel.resultGameData.ResultReel[0][i + 1] == SocketModel.resultGameData.ResultReel[0][i + 2])
-
+                if (convertedmatrix[i] == convertedmatrix[i + 1] && convertedmatrix[i + 1] == convertedmatrix[i + 2])
+                {
                     index = i;
+                    break;
+                }
+
             }
         }
         return index;

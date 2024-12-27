@@ -56,8 +56,8 @@ public class ArthurFreeSpinController : MonoBehaviour
                 count = SocketModel.resultGameData.freeSpinCount;
                 int freeSpinAdded = count - prevFreeSpin;
 
-                FreeSpinPopUP?.Invoke(freeSpinAdded, null);
                 UpdateUI?.Invoke(count, -1);
+                FreeSpinPopUP?.Invoke(freeSpinAdded, null);
 
                 yield return new WaitForSeconds(1.5f);
                 FreeSpinPopUpClose?.Invoke(null);
@@ -68,7 +68,6 @@ public class ArthurFreeSpinController : MonoBehaviour
             {
                 if (spin != null)
                     StopCoroutine(spin);
-
                 yield return thunderFP.StartFP(
                 froxenIndeces: SocketModel.resultGameData.frozenIndices,
                 count: SocketModel.resultGameData.thunderSpinCount);
