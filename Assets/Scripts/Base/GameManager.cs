@@ -547,7 +547,7 @@ public class GameManager : MonoBehaviour
 
         if (isAutoSpin || isFreeSpin)
         {
-            symbolAnim = StartCoroutine(PayLineSymbolRoutine(true));
+            SingleLoopAnimation();
             yield break;
         }
 

@@ -101,7 +101,7 @@ public class TommyFPController : MonoBehaviour
         colossalIcon.transform.DOScale(1, 0.35f).OnComplete(() =>
         {
 
-            Tweener tweener = colossalSlot.DOLocalMoveY(-tweenHeight, 1.2f).SetLoops(-1, LoopType.Restart).SetDelay(0).SetEase(Ease.Linear);
+            Tweener tweener = colossalSlot.DOLocalMoveY(-tweenHeight, 1f).SetLoops(-1, LoopType.Restart).SetDelay(0).SetEase(Ease.Linear);
             alltweens = tweener;
         });
 

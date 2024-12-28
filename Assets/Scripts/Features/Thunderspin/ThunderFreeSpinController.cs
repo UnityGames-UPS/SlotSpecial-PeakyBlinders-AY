@@ -34,7 +34,6 @@ public class ThunderFreeSpinController : MonoBehaviour
         {
             count--;
             UpdateUI?.Invoke(count, -1);
-
             Spin = StartCoroutine(SpinRoutine(null, CloseIcon, false, true, 0, totalDelay));
             yield return Spin;
             ResetIcon(false);
