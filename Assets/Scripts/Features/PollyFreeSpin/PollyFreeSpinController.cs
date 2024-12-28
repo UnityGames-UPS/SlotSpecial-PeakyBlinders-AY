@@ -71,8 +71,10 @@ public class PollyFreeSpinController : MonoBehaviour
 
             }
 
-            if (SocketModel.playerData.currentWining > 0)
-                yield return new WaitForSeconds(3f);
+            if(SocketModel.playerData.currentWining>0)
+            yield return new WaitForSeconds(3f);
+            else
+            yield return new WaitForSeconds(1f);
 
         }
         border.parent.gameObject.SetActive(false);

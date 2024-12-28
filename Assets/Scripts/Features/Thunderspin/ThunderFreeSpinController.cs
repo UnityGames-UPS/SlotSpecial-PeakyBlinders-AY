@@ -51,8 +51,11 @@ public class ThunderFreeSpinController : MonoBehaviour
             }
             if (SocketModel.resultGameData.isGrandPrize)
                 break;
+                
             if(SocketModel.playerData.currentWining>0)
             yield return new WaitForSeconds(3f);
+            else
+            yield return new WaitForSeconds(1f);
             
         }
         thunderSpinLayer.SetActive(false);

@@ -49,6 +49,8 @@ public class TommyFPController : MonoBehaviour
         yield return new WaitForSeconds(2);
         FreeSpinPopUpClose?.Invoke(tommySpinBg);
         colossalSlot.parent.gameObject.SetActive(true);
+        // colossalSlot.gameObject.SetActive(true);
+
         while (count > 0)
         {
             count--;
@@ -81,6 +83,8 @@ public class TommyFPController : MonoBehaviour
             }
             if(SocketModel.playerData.currentWining>0)
             yield return new WaitForSeconds(3f);
+            else
+            yield return new WaitForSeconds(1f);
 
         }
 
