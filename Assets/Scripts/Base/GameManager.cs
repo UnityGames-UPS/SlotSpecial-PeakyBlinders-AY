@@ -527,6 +527,10 @@ public class GameManager : MonoBehaviour
     {
         audioController.StopSpinAudio();
         SingleLoopAnimation();
+        
+        if(SocketModel.resultGameData.freeSpinIndices.Count>0)
+        yield return new WaitForSeconds(1f);
+
         audioController.StopWLAaudio();
         uIManager.UpdatePlayerInfo(SocketModel.playerData);
 
@@ -579,6 +583,11 @@ public class GameManager : MonoBehaviour
             {
                 payLineController.GeneratePayline(SocketModel.resultGameData.linesToEmit[i]);
             }
+        }
+
+        if(SocketModel.resultGameData.freeSpinIndices.Count>0){
+             paylineSymbolAnimPanel.gameObject.SetActive(true);
+            slotManager.StartIconAnimation(SocketModel.resultGameData.freeSpinIndices, paylineSymbolAnimPanel);
         }
     }
 
