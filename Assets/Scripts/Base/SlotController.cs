@@ -196,29 +196,41 @@ public class SlotController : MonoBehaviour
             tempIcon = slotMatrix[pos[0]].slotImages[pos[1]];
 
             if (tempIcon.id == 9)
-                tempIcon.StartAnim(ID_9);
+                tempIcon.StartAnim(ID_9,tempIcon.id);
             else if (tempIcon.id == 10)
-                tempIcon.StartAnim(ID_10);
+                tempIcon.StartAnim(ID_10,tempIcon.id);
             else if (tempIcon.id == 11)
-                tempIcon.StartAnim(ID_11);
+                tempIcon.StartAnim(ID_11,tempIcon.id);
             else if (tempIcon.id == 12)
-                tempIcon.StartAnim(ID_12);
+                tempIcon.StartAnim(ID_12,tempIcon.id);
             else
-                tempIcon.StartAnim(ID_0_8);
+                tempIcon.StartAnim(ID_0_8,tempIcon.id);
 
             animatingIcons.Add(tempIcon);
             tempIcon.SetParent(paylineSymbolAnimPanel);
         }
 
     }
-
-    internal void StartCoinAnimation(List<List<double>> coinIcons, Transform paylineSymbolAnimPanel)
+    internal void StartIconAnimation(List<List<int>> iconPos, Transform paylineSymbolAnimPanel)
     {
-        for (int j = 0; j < coinIcons.Count; j++)
+        SlotIconView tempIcon;
+        for (int j = 0; j < iconPos.Count; j++)
         {
-            slotMatrix[(int)coinIcons[j][0]].slotImages[(int)coinIcons[j][1]].StartAnim(ID_13_);
-            animatingIcons.Add(slotMatrix[(int)coinIcons[j][0]].slotImages[(int)coinIcons[j][1]]);
-            slotMatrix[(int)coinIcons[j][0]].slotImages[(int)coinIcons[j][1]].SetParent(paylineSymbolAnimPanel);
+            tempIcon = slotMatrix[iconPos[j][0]].slotImages[iconPos[j][1]];
+
+            if (tempIcon.id == 9)
+                tempIcon.StartAnim(ID_9,tempIcon.id);
+            else if (tempIcon.id == 10)
+                tempIcon.StartAnim(ID_10,tempIcon.id);
+            else if (tempIcon.id == 11)
+                tempIcon.StartAnim(ID_11,tempIcon.id);
+            else if (tempIcon.id == 12)
+                tempIcon.StartAnim(ID_12,tempIcon.id);
+            else
+                tempIcon.StartAnim(ID_0_8,tempIcon.id);
+
+            animatingIcons.Add(tempIcon);
+            tempIcon.SetParent(paylineSymbolAnimPanel);
         }
 
     }

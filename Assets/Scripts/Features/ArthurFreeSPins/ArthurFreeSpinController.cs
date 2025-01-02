@@ -76,10 +76,13 @@ public class ArthurFreeSpinController : MonoBehaviour
 
             if(SocketModel.playerData.currentWining>0)
             yield return new WaitForSeconds(3f);
+            else
+            yield return new WaitForSeconds(1f);
+
         }
 
         originalReel.SetActive(true);
-        psudoReel.SetActive(true);
+        psudoReel.SetActive(false);
 
     }
 
@@ -99,6 +102,8 @@ public class ArthurFreeSpinController : MonoBehaviour
         yield return PlayCutAnimation();
         yield return RearrangeMatrix();
         originalReel.SetActive(true);
+        psudoReel.SetActive(false);
+
         yield return null;
     }
 

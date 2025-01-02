@@ -31,7 +31,8 @@ public class ResultGameData
     public bool isPollyBonus {get; set;}
     public bool isThunderSpin {get; set;}
     public bool freeSpinAdded {get; set;}
-
+    
+    public List<List<int>> freeSpinIndices{get; set;}
     public int thunderSpinCount {get; set;}
 
     public bool thunderSpinAdded {get; set;}

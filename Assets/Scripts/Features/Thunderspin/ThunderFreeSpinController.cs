@@ -34,7 +34,6 @@ public class ThunderFreeSpinController : MonoBehaviour
         {
             count--;
             UpdateUI?.Invoke(count, -1);
-
             Spin = StartCoroutine(SpinRoutine(null, CloseIcon, false, true, 0, totalDelay));
             yield return Spin;
             ResetIcon(false);
@@ -52,8 +51,11 @@ public class ThunderFreeSpinController : MonoBehaviour
             }
             if (SocketModel.resultGameData.isGrandPrize)
                 break;
+                
             if(SocketModel.playerData.currentWining>0)
             yield return new WaitForSeconds(3f);
+            else
+            yield return new WaitForSeconds(1f);
             
         }
         thunderSpinLayer.SetActive(false);

@@ -66,13 +66,15 @@ public class SlotIconView : MonoBehaviour
         iconImage.material = null;
 
     }
-    internal void StartAnim(List<Sprite> animSprite)
+    internal void StartAnim(List<Sprite> animSprite, int id)
     {
         activeanimation.textureArray.Clear();
         activeanimation.textureArray.AddRange(animSprite);
         activeanimation.AnimationSpeed = animSprite.Count / 2 + 0.5f;
         if(id <=8 || id >= 13)
         iconBorderImage.gameObject.SetActive(true);
+
+        Debug.Log("in start anim"+id);
         activeanimation.StartAnimation();
     }
 

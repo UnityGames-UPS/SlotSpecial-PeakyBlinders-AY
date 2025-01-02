@@ -49,6 +49,8 @@ public class TommyFPController : MonoBehaviour
         yield return new WaitForSeconds(2);
         FreeSpinPopUpClose?.Invoke(tommySpinBg);
         colossalSlot.parent.gameObject.SetActive(true);
+        // colossalSlot.gameObject.SetActive(true);
+
         while (count > 0)
         {
             count--;
@@ -81,6 +83,8 @@ public class TommyFPController : MonoBehaviour
             }
             if(SocketModel.playerData.currentWining>0)
             yield return new WaitForSeconds(3f);
+            else
+            yield return new WaitForSeconds(1f);
 
         }
 
@@ -101,7 +105,7 @@ public class TommyFPController : MonoBehaviour
         colossalIcon.transform.DOScale(1, 0.35f).OnComplete(() =>
         {
 
-            Tweener tweener = colossalSlot.DOLocalMoveY(-tweenHeight, 1.2f).SetLoops(-1, LoopType.Restart).SetDelay(0).SetEase(Ease.Linear);
+            Tweener tweener = colossalSlot.DOLocalMoveY(-tweenHeight, 1f).SetLoops(-1, LoopType.Restart).SetDelay(0).SetEase(Ease.Linear);
             alltweens = tweener;
         });
 
