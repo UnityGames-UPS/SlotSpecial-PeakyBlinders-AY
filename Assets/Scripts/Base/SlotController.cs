@@ -56,10 +56,8 @@ public class SlotController : MonoBehaviour
         for (int i = 0; i < Slot_Transform.Length; i++)
         {
             RespectMask(i);
-            InitializeTweening(Slot_Transform[i], turboMode, GameManager.ImmediateStop);
-            if (GameManager.ImmediateStop)
-                yield return new WaitForSeconds(0.00f);
-            else
+            InitializeTweening(Slot_Transform[i], turboMode);
+            if (!GameManager.ImmediateStop)
                 yield return new WaitForSeconds(0.15f);
 
 
@@ -289,7 +287,7 @@ public class SlotController : MonoBehaviour
     }
 
     #region TweeningCode
-    private void InitializeTweening(Transform slotTransform, bool turboMode, bool immediateStop)
+    private void InitializeTweening(Transform slotTransform, bool turboMode)
     {
         float delay = 0.4f;
         if (turboMode)
