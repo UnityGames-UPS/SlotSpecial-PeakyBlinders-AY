@@ -21,6 +21,7 @@ public class PollyFreeSpinController : MonoBehaviour
     internal Action<int, double> UpdateUI;
     internal Action<int, GameObject> FreeSpinPopUP;
     internal Action<GameObject> FreeSpinPopUpClose;
+    internal Action FreeSpinPopUPOverlay;
     [SerializeField] GameObject pollySpinBg;
 
     [SerializeField] internal ThunderFreeSpinController thunderFP;
@@ -32,8 +33,11 @@ public class PollyFreeSpinController : MonoBehaviour
 
     internal IEnumerator StartFP(int count)
     {
+        FreeSpinPopUPOverlay?.Invoke();
+        yield return new WaitWhile(()=>!UIManager.freeSpinOverLayOpen);
+
         FreeSpinPopUP?.Invoke(count, pollySpinBg);
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1.8f);
         FreeSpinPopUpClose?.Invoke(pollySpinBg);
 
         border.parent.gameObject.SetActive(true);
@@ -64,10 +68,11 @@ public class PollyFreeSpinController : MonoBehaviour
             {
                 if (spin != null)
                     StopCoroutine(spin);
-
+                border.parent.gameObject.SetActive(false);
                 yield return thunderFP.StartFP(
                 froxenIndeces: SocketModel.resultGameData.frozenIndices,
                 count: SocketModel.resultGameData.thunderSpinCount);
+                border.parent.gameObject.SetActive(true);
 
             }
 

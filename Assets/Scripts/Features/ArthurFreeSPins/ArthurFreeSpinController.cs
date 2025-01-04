@@ -27,6 +27,7 @@ public class ArthurFreeSpinController : MonoBehaviour
     internal Action<int, double> UpdateUI;
     internal Action<int, GameObject> FreeSpinPopUP;
     internal Action<GameObject> FreeSpinPopUpClose;
+    internal Action FreeSpinPopUPOverlay;
     [SerializeField] GameObject arthurSpinBg;
 
 
@@ -34,8 +35,11 @@ public class ArthurFreeSpinController : MonoBehaviour
 
     internal IEnumerator StartFP(GameObject originalReel, int count, bool initiate = true)
     {
+        FreeSpinPopUPOverlay?.Invoke();
+        yield return new WaitWhile(()=>UIManager.freeSpinOverLayOpen);
+
         FreeSpinPopUP?.Invoke(count, arthurSpinBg);
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1.8f);
         FreeSpinPopUpClose?.Invoke(arthurSpinBg);
 
         if (initiate)
@@ -68,16 +72,17 @@ public class ArthurFreeSpinController : MonoBehaviour
             {
                 if (spin != null)
                     StopCoroutine(spin);
+
                 yield return thunderFP.StartFP(
                 froxenIndeces: SocketModel.resultGameData.frozenIndices,
                 count: SocketModel.resultGameData.thunderSpinCount);
 
             }
 
-            if(SocketModel.playerData.currentWining>0)
-            yield return new WaitForSeconds(3f);
+            if (SocketModel.playerData.currentWining > 0)
+                yield return new WaitForSeconds(3f);
             else
-            yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(1f);
 
         }
 

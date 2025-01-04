@@ -135,12 +135,14 @@ public class GameManager : MonoBehaviour
         tommyFP.FreeSpinPopUP = uIManager.FreeSpinPopup;
         tommyFP.FreeSpinPopUpClose = uIManager.CloseFreeSpinPopup;
         tommyFP.thunderFP = thunderFP;
+        tommyFP.FreeSpinPopUPOverlay = uIManager.OpenFreeSpinPopupOverlay;
 
         thunderFP.UpdateUI = uIManager.UpdateFreeSpinInfo;
         thunderFP.SpinRoutine = SpinRoutine;
         thunderFP.FreeSpinPopUP = uIManager.FreeSpinPopup;
         thunderFP.FreeSpinPopUpClose = uIManager.CloseFreeSpinPopup;
         thunderFP.imageRef.AddRange(slotManager.iconImages);
+        thunderFP.FreeSpinPopUPOverlay = uIManager.OpenFreeSpinPopupOverlay;
 
         arthurFP.iconref.AddRange(slotManager.iconImages);
         arthurFP.populateOriginalMatrix = slotManager.PopulateSLotMatrix;
@@ -149,12 +151,16 @@ public class GameManager : MonoBehaviour
         arthurFP.FreeSpinPopUP = uIManager.FreeSpinPopup;
         arthurFP.FreeSpinPopUpClose = uIManager.CloseFreeSpinPopup;
         arthurFP.thunderFP = thunderFP;
+        arthurFP.FreeSpinPopUPOverlay = uIManager.OpenFreeSpinPopupOverlay;
+
 
         pollyFP.SpinRoutine = SpinRoutine;
         pollyFP.UpdateUI = uIManager.UpdateFreeSpinInfo;
         pollyFP.FreeSpinPopUP = uIManager.FreeSpinPopup;
         pollyFP.FreeSpinPopUpClose = uIManager.CloseFreeSpinPopup;
         pollyFP.thunderFP = thunderFP;
+        pollyFP.FreeSpinPopUPOverlay = uIManager.OpenFreeSpinPopupOverlay;
+
 
         StopSpinButton.onClick.AddListener(() => StartCoroutine(StopSpin()));
     }

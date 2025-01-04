@@ -26,8 +26,9 @@ public class UIManager : MonoBehaviour
     [Header("Free Spin Popup")]
     [SerializeField] private GameObject FreeSPinPopUpObject;
     [SerializeField] private TMP_Text FreeSpinCount;
-    [SerializeField] private GameObject freeSpinBg;
-    [SerializeField] private Image[] purpleBar;
+    [SerializeField] private GameObject FreeSpinPopupOverlayObject;
+    [SerializeField] private Button OverLaySkipButton;
+    internal static bool freeSpinOverLayOpen;
 
     [Header("Popus UI")]
     [SerializeField] private GameObject MainPopup_Object;
@@ -163,6 +164,7 @@ public class UIManager : MonoBehaviour
         ToggleMusic();
         ToggleSound();
         betButton.transform.DOScale(1.1f,1f).SetLoops(-1,LoopType.Yoyo);
+        OverLaySkipButton.onClick.AddListener(CloseFreeSpinPopupOverlay);
     }
 
     private void SetButton(Button button, Action action)
@@ -369,7 +371,17 @@ public class UIManager : MonoBehaviour
 
 
 
+    internal void OpenFreeSpinPopupOverlay(){
 
+        FreeSpinPopupOverlayObject.SetActive(true);
+        freeSpinOverLayOpen=true;
+        Invoke(nameof(CloseFreeSpinPopupOverlay),1.5f);
+    }
+    void CloseFreeSpinPopupOverlay(){
+
+        FreeSpinPopupOverlayObject.SetActive(false);
+        freeSpinOverLayOpen=false;
+    }
 
     internal void FreeSpinPopup(int amount, GameObject Bg)
     {
@@ -378,7 +390,6 @@ public class UIManager : MonoBehaviour
         if (Bg)
             Bg.SetActive(true);
     }
-
     internal void CloseFreeSpinPopup(GameObject Bg)
     {
         ClosePopup();

@@ -21,12 +21,16 @@ public class ThunderFreeSpinController : MonoBehaviour
 
     internal Action<int, GameObject> FreeSpinPopUP;
     internal Action<GameObject> FreeSpinPopUpClose;
+    internal Action FreeSpinPopUPOverlay;
 
     [SerializeField] GameObject thunderSpinBg;
     internal IEnumerator StartFP(List<List<double>> froxenIndeces, int count)
     {
+        FreeSpinPopUPOverlay?.Invoke();
+        yield return new WaitWhile(()=>UIManager.freeSpinOverLayOpen);
+
         FreeSpinPopUP?.Invoke(count, thunderSpinBg);
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1.8f);
         FreeSpinPopUpClose?.Invoke(thunderSpinBg);
         horizontalbar.SetActive(true);
         Initiate(froxenIndeces);

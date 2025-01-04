@@ -23,6 +23,7 @@ public class TommyFPController : MonoBehaviour
     internal Action<int, double> UpdateUI;
 
     internal Action<int, GameObject> FreeSpinPopUP;
+    internal Action FreeSpinPopUPOverlay;
     internal Action<GameObject> FreeSpinPopUpClose;
     [SerializeField] GameObject tommySpinBg;
 
@@ -42,11 +43,14 @@ public class TommyFPController : MonoBehaviour
     [SerializeField] private List<Sprite> ID_9;
     [SerializeField] private List<Sprite> ID_10;
 
-    int colIndex=-1;
+    int colIndex = -1;
     internal IEnumerator StartFP(int count)
     {
+        FreeSpinPopUPOverlay?.Invoke();
+        yield return new WaitWhile(()=>!UIManager.freeSpinOverLayOpen);
+
         FreeSpinPopUP?.Invoke(count, tommySpinBg);
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1.8f);
         FreeSpinPopUpClose?.Invoke(tommySpinBg);
         colossalSlot.parent.gameObject.SetActive(true);
         // colossalSlot.gameObject.SetActive(true);
@@ -75,16 +79,17 @@ public class TommyFPController : MonoBehaviour
             {
                 if (spin != null)
                     StopCoroutine(spin);
-
+                colossalSlot.parent.gameObject.SetActive(false);
                 yield return thunderFP.StartFP(
                 froxenIndeces: SocketModel.resultGameData.frozenIndices,
                 count: SocketModel.resultGameData.thunderSpinCount);
+                colossalSlot.parent.gameObject.SetActive(true);
 
             }
-            if(SocketModel.playerData.currentWining>0)
-            yield return new WaitForSeconds(3f);
+            if (SocketModel.playerData.currentWining > 0)
+                yield return new WaitForSeconds(3f);
             else
-            yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(1f);
 
         }
 
@@ -94,9 +99,9 @@ public class TommyFPController : MonoBehaviour
     }
     private void StartColossalSpin()
     {
-        colIndex=FindColIndex();
-        if(colIndex<0)
-        return;
+        colIndex = FindColIndex();
+        if (colIndex < 0)
+            return;
 
         colossalIcon.StopAnimation();
         colossalSlot.transform.localPosition = new Vector3(-270 + colIndex * 270, colossalSlot.transform.localPosition.y);
@@ -114,8 +119,8 @@ public class TommyFPController : MonoBehaviour
 
     private void StopTweening()
     {
-        if(colIndex<0)
-        return;
+        if (colIndex < 0)
+            return;
 
         alltweens?.Pause();
         colossalSlot.localPosition = new Vector2(colossalSlot.localPosition.x, initialPos + 680);
@@ -145,7 +150,7 @@ public class TommyFPController : MonoBehaviour
 
     private int FindColIndex()
     {
-        int id=-1;
+        int id = -1;
         List<string> convertedmatrix = Helper.Convert2dToLinearMatrix(SocketModel.resultGameData.ResultReel);
 
         for (int i = 0; i < convertedmatrix.Count; i++)
@@ -153,69 +158,72 @@ public class TommyFPController : MonoBehaviour
             if (i + 2 < convertedmatrix.Count)
             {
 
-                if (convertedmatrix[i] == convertedmatrix[i + 1] && convertedmatrix[i + 1] == convertedmatrix[i + 2]){
-                colIndex = i;
-                id=SocketModel.resultGameData.ResultReel[0][i];
-                break;
+                if (convertedmatrix[i] == convertedmatrix[i + 1] && convertedmatrix[i + 1] == convertedmatrix[i + 2])
+                {
+                    colIndex = i;
+                    id = SocketModel.resultGameData.ResultReel[0][i];
+                    break;
                 }
 
             }
         }
-        if(colIndex>=0)
-        PopulateSpriteNAnim(id);
+        if (colIndex >= 0)
+            PopulateSpriteNAnim(id);
         return colIndex;
 
 
     }
 
-    void PopulateSpriteNAnim(int id){
+    void PopulateSpriteNAnim(int id)
+    {
         colossalIcon.textureArray.Clear();
-        Debug.Log("id"+id);
-        switch(id){
-        case 0:
-        colossalIcon.rendererDelegate.sprite=ID_0[0];
-        colossalIcon.textureArray.AddRange(ID_0);
-        break;
-        case 1:
-        colossalIcon.rendererDelegate.sprite=ID_1[0];
-        colossalIcon.textureArray.AddRange(ID_1);
-        break;
-        case 2:
-        colossalIcon.rendererDelegate.sprite=ID_2[0];
-        colossalIcon.textureArray.AddRange(ID_2);
-        break;
-        case 3:
-        colossalIcon.rendererDelegate.sprite=ID_3[0];
-        colossalIcon.textureArray.AddRange(ID_3);
-        break;
-        case 4:
-        colossalIcon.rendererDelegate.sprite=ID_4[0];
-        colossalIcon.textureArray.AddRange(ID_4);
-        break;
-        case 5:
-        colossalIcon.rendererDelegate.sprite=ID_5[0];
-        colossalIcon.textureArray.AddRange(ID_5);
-        break;
-        case 6:
-        colossalIcon.rendererDelegate.sprite=ID_6[0];
-        colossalIcon.textureArray.AddRange(ID_6);
-        break;
-        case 7:
-        colossalIcon.rendererDelegate.sprite=ID_7[0];
-        colossalIcon.textureArray.AddRange(ID_7);
-        break;
-        case 8:
-        colossalIcon.rendererDelegate.sprite=ID_8[0];
-        colossalIcon.textureArray.AddRange(ID_8);
-        break;
-        case int n when n > 8 && n < 13:
-        colossalIcon.rendererDelegate.sprite=ID_9[0];
-        colossalIcon.textureArray.AddRange(ID_9);
-        break;
-        case int n when n >= 13:
-        colossalIcon.rendererDelegate.sprite=ID_10[0];
-        colossalIcon.textureArray.AddRange(ID_10);
-        break;
+        Debug.Log("id" + id);
+        switch (id)
+        {
+            case 0:
+                colossalIcon.rendererDelegate.sprite = ID_0[0];
+                colossalIcon.textureArray.AddRange(ID_0);
+                break;
+            case 1:
+                colossalIcon.rendererDelegate.sprite = ID_1[0];
+                colossalIcon.textureArray.AddRange(ID_1);
+                break;
+            case 2:
+                colossalIcon.rendererDelegate.sprite = ID_2[0];
+                colossalIcon.textureArray.AddRange(ID_2);
+                break;
+            case 3:
+                colossalIcon.rendererDelegate.sprite = ID_3[0];
+                colossalIcon.textureArray.AddRange(ID_3);
+                break;
+            case 4:
+                colossalIcon.rendererDelegate.sprite = ID_4[0];
+                colossalIcon.textureArray.AddRange(ID_4);
+                break;
+            case 5:
+                colossalIcon.rendererDelegate.sprite = ID_5[0];
+                colossalIcon.textureArray.AddRange(ID_5);
+                break;
+            case 6:
+                colossalIcon.rendererDelegate.sprite = ID_6[0];
+                colossalIcon.textureArray.AddRange(ID_6);
+                break;
+            case 7:
+                colossalIcon.rendererDelegate.sprite = ID_7[0];
+                colossalIcon.textureArray.AddRange(ID_7);
+                break;
+            case 8:
+                colossalIcon.rendererDelegate.sprite = ID_8[0];
+                colossalIcon.textureArray.AddRange(ID_8);
+                break;
+            case int n when n > 8 && n < 13:
+                colossalIcon.rendererDelegate.sprite = ID_9[0];
+                colossalIcon.textureArray.AddRange(ID_9);
+                break;
+            case int n when n >= 13:
+                colossalIcon.rendererDelegate.sprite = ID_10[0];
+                colossalIcon.textureArray.AddRange(ID_10);
+                break;
 
         }
     }
