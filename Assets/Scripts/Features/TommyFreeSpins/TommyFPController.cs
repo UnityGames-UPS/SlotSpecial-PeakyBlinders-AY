@@ -82,7 +82,9 @@ public class TommyFPController : MonoBehaviour
                 colossalSlot.parent.gameObject.SetActive(false);
                 yield return thunderFP.StartFP(
                 froxenIndeces: SocketModel.resultGameData.frozenIndices,
-                count: SocketModel.resultGameData.thunderSpinCount);
+                count: SocketModel.resultGameData.thunderSpinCount,
+                ResultReel: SocketModel.resultGameData.ResultReel
+                );
                 colossalSlot.parent.gameObject.SetActive(true);
 
             }

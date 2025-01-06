@@ -75,7 +75,8 @@ public class ArthurFreeSpinController : MonoBehaviour
 
                 yield return thunderFP.StartFP(
                 froxenIndeces: SocketModel.resultGameData.frozenIndices,
-                count: SocketModel.resultGameData.thunderSpinCount);
+                count: SocketModel.resultGameData.thunderSpinCount,
+                ResultReel: SocketModel.resultGameData.ResultReel);
 
             }
 

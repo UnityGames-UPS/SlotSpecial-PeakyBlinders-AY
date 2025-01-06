@@ -200,7 +200,7 @@ public class UIManager : MonoBehaviour
     internal void UpdatePlayerInfo(PlayerData playerData)
     {
         playerCurrentWinning.text = playerData.currentWining.ToString();
-        playerBalance.text = playerData.Balance.ToString("f4");
+        playerBalance.text = playerData.Balance.ToString("f3");
 
     }
 
@@ -423,12 +423,12 @@ public class UIManager : MonoBehaviour
 
         DOTween.To(() => initAmount, (val) => initAmount = val, finalAmount, 0.8f).OnUpdate(() =>
         {
-            playerBalance.text = initAmount.ToString("f4");
+            playerBalance.text = initAmount.ToString("f3");
 
         }).OnComplete(() =>
         {
 
-            playerBalance.text = finalAmount.ToString();
+            playerBalance.text = finalAmount.ToString("f3");
         });
     }
 

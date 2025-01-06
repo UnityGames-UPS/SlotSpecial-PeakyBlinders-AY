@@ -71,7 +71,9 @@ public class PollyFreeSpinController : MonoBehaviour
                 border.parent.gameObject.SetActive(false);
                 yield return thunderFP.StartFP(
                 froxenIndeces: SocketModel.resultGameData.frozenIndices,
-                count: SocketModel.resultGameData.thunderSpinCount);
+                count: SocketModel.resultGameData.thunderSpinCount,
+                ResultReel: SocketModel.resultGameData.ResultReel
+                );
                 border.parent.gameObject.SetActive(true);
 
             }

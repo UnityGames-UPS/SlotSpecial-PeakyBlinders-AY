@@ -67,14 +67,16 @@ public class SlotController : MonoBehaviour
     internal void PopulateSLotMatrix(List<List<int>> resultData, List<List<double>> coins = null)
     {
 
-        if (coins != null)
-        {
-            for (int i = 0; i < coins.Count; i++)
+
+            if (coins != null)
             {
-                if (coins[i][3] == 13)
-                    slotMatrix[(int)coins[i][0]].slotImages[(int)coins[i][1]].SetCoin(coins[i][2]);
+                for (int i = 0; i < coins.Count; i++)
+                {
+                    if (coins[i][3] == 13)
+                        slotMatrix[(int)coins[i][0]].slotImages[(int)coins[i][1]].SetCoin(coins[i][2]);
+                }
             }
-        }
+
 
         for (int i = 0; i < resultData.Count; i++)
         {
@@ -194,15 +196,15 @@ public class SlotController : MonoBehaviour
             tempIcon = slotMatrix[pos[0]].slotImages[pos[1]];
 
             if (tempIcon.id == 9)
-                tempIcon.StartAnim(ID_9,tempIcon.id);
+                tempIcon.StartAnim(ID_9, tempIcon.id);
             else if (tempIcon.id == 10)
-                tempIcon.StartAnim(ID_10,tempIcon.id);
+                tempIcon.StartAnim(ID_10, tempIcon.id);
             else if (tempIcon.id == 11)
-                tempIcon.StartAnim(ID_11,tempIcon.id);
+                tempIcon.StartAnim(ID_11, tempIcon.id);
             else if (tempIcon.id == 12)
-                tempIcon.StartAnim(ID_12,tempIcon.id);
+                tempIcon.StartAnim(ID_12, tempIcon.id);
             else
-                tempIcon.StartAnim(ID_0_8,tempIcon.id);
+                tempIcon.StartAnim(ID_0_8, tempIcon.id);
 
             animatingIcons.Add(tempIcon);
             tempIcon.SetParent(paylineSymbolAnimPanel);
@@ -217,15 +219,15 @@ public class SlotController : MonoBehaviour
             tempIcon = slotMatrix[iconPos[j][0]].slotImages[iconPos[j][1]];
 
             if (tempIcon.id == 9)
-                tempIcon.StartAnim(ID_9,tempIcon.id);
+                tempIcon.StartAnim(ID_9, tempIcon.id);
             else if (tempIcon.id == 10)
-                tempIcon.StartAnim(ID_10,tempIcon.id);
+                tempIcon.StartAnim(ID_10, tempIcon.id);
             else if (tempIcon.id == 11)
-                tempIcon.StartAnim(ID_11,tempIcon.id);
+                tempIcon.StartAnim(ID_11, tempIcon.id);
             else if (tempIcon.id == 12)
-                tempIcon.StartAnim(ID_12,tempIcon.id);
+                tempIcon.StartAnim(ID_12, tempIcon.id);
             else
-                tempIcon.StartAnim(ID_0_8,tempIcon.id);
+                tempIcon.StartAnim(ID_0_8, tempIcon.id);
 
             animatingIcons.Add(tempIcon);
             tempIcon.SetParent(paylineSymbolAnimPanel);
@@ -278,6 +280,22 @@ public class SlotController : MonoBehaviour
             {
                 slotMatrix[i].slotImages[j].ResetParent();
                 slotMatrix[i].slotImages[j].DeActivateIconBorder();
+                //  slotMatrix[i].slotImages[j].ClearCoin();
+
+            }
+
+        }
+        // animatingIcons.Clear();
+
+    }
+    internal void CLearAllCoins()
+    {
+
+        for (int i = 0; i < slotMatrix.Count; i++)
+        {
+            for (int j = 0; j < slotMatrix[i].slotImages.Count; j++)
+            {
+
                 slotMatrix[i].slotImages[j].ClearCoin();
             }
 

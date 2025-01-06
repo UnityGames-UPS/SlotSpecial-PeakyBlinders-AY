@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Burst.Intrinsics;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,8 +26,13 @@ public class SlotIconView : MonoBehaviour
 
 
     internal void SetIcon(Sprite image, int id, int pos)
-    {
+    {       
         iconImage.sprite = image;
+
+        if(id!=13){
+        text.text = "0";
+        text.gameObject.SetActive(false);
+        }
         this.id = id;
         this.pos = pos;
 
