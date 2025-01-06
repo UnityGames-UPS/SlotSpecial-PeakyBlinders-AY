@@ -78,6 +78,7 @@ public class AudioController : MonoBehaviour
             audioPlayer_wl.Pause();
             audioPlayer_button.Pause();
             audioPlayer_spin_stop.Pause();
+            sidebar_sound.Pause();
 
         }
         else
@@ -86,6 +87,7 @@ public class AudioController : MonoBehaviour
             audioPlayer_wl.UnPause();
             audioPlayer_button.UnPause();
             audioPlayer_spin_stop.UnPause();
+            sidebar_sound.UnPause();
 
 
         }

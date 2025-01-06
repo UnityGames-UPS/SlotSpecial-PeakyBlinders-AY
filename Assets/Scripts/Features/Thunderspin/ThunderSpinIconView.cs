@@ -10,7 +10,7 @@ public class ThunderSpinIconView : MonoBehaviour
     [SerializeField] internal TMP_Text coinText;
     
     [SerializeField] internal ImageAnimation anim;
-    internal bool hasValue;
+    [SerializeField]internal bool hasValue;
 
 
     internal void StartAnim(List<Sprite> animSPrite){
