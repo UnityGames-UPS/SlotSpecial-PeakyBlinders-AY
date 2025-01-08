@@ -121,7 +121,6 @@ public class UIManager : MonoBehaviour
 
     Tweener normalWinTween;
 
-    private double[] mini_GrandMultiplier= new double[4];
 
     private void Awake()
     {
@@ -163,7 +162,7 @@ public class UIManager : MonoBehaviour
         isSound = false;
         ToggleMusic();
         ToggleSound();
-        betButton.transform.DOScale(1.1f,1f).SetLoops(-1,LoopType.Yoyo);
+        betButton.transform.DOScale(1.1f, 1f).SetLoops(-1, LoopType.Yoyo);
         OverLaySkipButton.onClick.AddListener(CloseFreeSpinPopupOverlay);
     }
 
@@ -243,7 +242,7 @@ public class UIManager : MonoBehaviour
         OpenPopup(ADPopup_Object);
     }
 
-    internal void PopulateSymbolsPayout(UIData uIData,double currentBetPerLine)
+    internal void PopulateSymbolsPayout(UIData uIData, double currentBetPerLine)
     {
         string text;
         for (int i = 0; i < SymbolsText.Length; i++)
@@ -256,61 +255,44 @@ public class UIManager : MonoBehaviour
             SymbolsText[i].text = text;
         }
 
-            FreeSpinsText[0].text=uIData.symbols[13].description.ToString();
-            FreeSpinsText[1].text=uIData.symbols[10].description.ToString();
-            FreeSpinsText[2].text=uIData.symbols[12].description.ToString();
-            FreeSpinsText[3].text=uIData.symbols[11].description.ToString();
-            Wild_Text.text = uIData.symbols[8].description.ToString();
+        FreeSpinsText[0].text = uIData.symbols[13].description.ToString();
+        FreeSpinsText[1].text = uIData.symbols[10].description.ToString();
+        FreeSpinsText[2].text = uIData.symbols[12].description.ToString();
+        FreeSpinsText[3].text = uIData.symbols[11].description.ToString();
+        Wild_Text.text = uIData.symbols[8].description.ToString();
 
-        PopulateSpecialSymbols(uIData, currentBetPerLine);
-
-    }
-
-    private void PopulateSpecialSymbols(UIData uIData, double currentBetPerLine)
-    {
-        string text="";
+        text = "";
 
         for (int i = 0; i < uIData.specialBonusSymbolMulipliers.Count; i++)
         {
             text = "";
             if (uIData.specialBonusSymbolMulipliers[i].name == "Mini Multiplier")
             {
-                mini_grand_text[0].text = (uIData.specialBonusSymbolMulipliers[i].value * currentBetPerLine).ToString();
-                mini_GrandMultiplier[0]=uIData.specialBonusSymbolMulipliers[i].value;
+                mini_grand_text[0].text = (uIData.specialBonusSymbolMulipliers[i].value ).ToString() + "X";
             }
             else if (uIData.specialBonusSymbolMulipliers[i].name == "Major Multiplier")
             {
-                mini_grand_text[1].text = (uIData.specialBonusSymbolMulipliers[i].value * currentBetPerLine).ToString();
-                mini_GrandMultiplier[1]=uIData.specialBonusSymbolMulipliers[i].value;
+                mini_grand_text[1].text = (uIData.specialBonusSymbolMulipliers[i].value ).ToString() + "X";
 
             }
             else if (uIData.specialBonusSymbolMulipliers[i].name == "Mega Multiplier")
             {
-                mini_grand_text[2].text = (uIData.specialBonusSymbolMulipliers[i].value * currentBetPerLine).ToString();
-                mini_GrandMultiplier[2]=uIData.specialBonusSymbolMulipliers[i].value;
+                mini_grand_text[2].text = (uIData.specialBonusSymbolMulipliers[i].value ).ToString() + "X";
 
             }
             else if (uIData.specialBonusSymbolMulipliers[i].name == "Grand Multiplier")
             {
-                mini_grand_text[3].text = (uIData.specialBonusSymbolMulipliers[i].value * currentBetPerLine).ToString();
-                mini_GrandMultiplier[3]=uIData.specialBonusSymbolMulipliers[i].value;
+                mini_grand_text[3].text = (uIData.specialBonusSymbolMulipliers[i].value ).ToString() + "X";
 
             }
         }
 
     }
-    private void PopulateSpecialSymbols( double betPerLine)
-    {
 
-        for (int i = 0; i < mini_grand_text.Length; i++)
-        {
-                mini_grand_text[i].text = (betPerLine * mini_GrandMultiplier[i]).ToString();
+ 
 
-        }
 
-    }
-
-    internal void PopulateBets(List<double> bets,int totalLines, Action<int> onclick)
+    internal void PopulateBets(List<double> bets, int totalLines, Action<int> onclick)
     {
 
         for (int i = 0; i < betValueButtons.Length; i++)
@@ -318,11 +300,10 @@ public class UIManager : MonoBehaviour
             if (i < bets.Count)
             {
                 int index = i;
-                betTexts[index].text = (bets[index]*totalLines ).ToString();
+                betTexts[index].text = (bets[index] * totalLines).ToString();
                 betValueButtons[index].onClick.AddListener(() =>
                 {
                     onclick(index);
-                    PopulateSpecialSymbols(bets[index]);
                     ClosePopup();
                 });
             }
@@ -371,16 +352,18 @@ public class UIManager : MonoBehaviour
 
 
 
-    internal void OpenFreeSpinPopupOverlay(){
+    internal void OpenFreeSpinPopupOverlay()
+    {
 
         FreeSpinPopupOverlayObject.SetActive(true);
-        freeSpinOverLayOpen=true;
-        Invoke(nameof(CloseFreeSpinPopupOverlay),1.5f);
+        freeSpinOverLayOpen = true;
+        Invoke(nameof(CloseFreeSpinPopupOverlay), 1.5f);
     }
-    void CloseFreeSpinPopupOverlay(){
+    void CloseFreeSpinPopupOverlay()
+    {
 
         FreeSpinPopupOverlayObject.SetActive(false);
-        freeSpinOverLayOpen=false;
+        freeSpinOverLayOpen = false;
     }
 
     internal void FreeSpinPopup(int amount, GameObject Bg)
@@ -448,7 +431,7 @@ public class UIManager : MonoBehaviour
         ClosePopup();
         if (specialWinObject.activeSelf)
             specialWinObject.SetActive(false);
-            
+
         yield return null;
 
 
@@ -456,12 +439,14 @@ public class UIManager : MonoBehaviour
     }
 
 
-    internal void NormalWinAnimation(){
-            normalWinTween=playerCurrentWinning.transform.DOScale(1.2f,1f).SetLoops(-1,LoopType.Yoyo);
+    internal void NormalWinAnimation()
+    {
+        normalWinTween = playerCurrentWinning.transform.DOScale(1.2f, 1f).SetLoops(-1, LoopType.Yoyo);
     }
-    internal void StopNormalWinAnimation(){
-            normalWinTween.Kill();
-            playerCurrentWinning.transform.localScale= Vector2.one;
+    internal void StopNormalWinAnimation()
+    {
+        normalWinTween.Kill();
+        playerCurrentWinning.transform.localScale = Vector2.one;
     }
     internal void DisconnectionPopup()
     {
