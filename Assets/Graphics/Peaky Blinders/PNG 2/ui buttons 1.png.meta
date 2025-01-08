@@ -521,6 +521,27 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: ui buttons 1_20
+      rect:
+        serializedVersion: 2
+        x: 9973
+        y: 1709
+        width: 2084
+        height: 588
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b948fb21dc4d2424883553d729438f5f
+      internalID: -247619608
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -543,7 +564,9 @@ TextureImporter:
       ui buttons 1_16: -641401323
       ui buttons 1_17: -1516387569
       ui buttons 1_18: -1053369286
+      ui buttons 1_19: -1788191105
       ui buttons 1_2: 634035437
+      ui buttons 1_20: -247619608
       ui buttons 1_3: 1491313134
       ui buttons 1_4: 290362809
       ui buttons 1_5: -459226398
