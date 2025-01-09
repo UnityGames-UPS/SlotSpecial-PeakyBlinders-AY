@@ -36,7 +36,7 @@ public class SlotIconView : MonoBehaviour
         this.id = id;
         this.pos = pos;
 
-        if (id > 8 && id < 13)
+        if (id == 9 || id==10 || id==11 || id==12)
         {
             activeanimation.rendererDelegate = iconImage;
         }
@@ -44,6 +44,7 @@ public class SlotIconView : MonoBehaviour
         {
             activeanimation.rendererDelegate = iconBorderImage;
         }
+        iconBorderImage.gameObject.SetActive(false);
     }
 
     internal void SetCoin(double value)
@@ -79,8 +80,9 @@ public class SlotIconView : MonoBehaviour
         activeanimation.AnimationSpeed = animSprite.Count / 2 + 0.5f;
         if(id <=8 || id >= 13)
         iconBorderImage.gameObject.SetActive(true);
+        else
+        iconBorderImage.gameObject.SetActive(false);
 
-        Debug.Log("in start anim"+id);
         activeanimation.StartAnimation();
     }
 

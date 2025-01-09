@@ -97,6 +97,7 @@ public class UIManager : MonoBehaviour
     [Header("free spin info")]
 
     [SerializeField] private TMP_Text freeSpinInfo;
+    [SerializeField] private TMP_Text thunderFreeSpinInfo;
     [SerializeField] private TMP_Text freeSpinWinnings;
 
     [SerializeField] private GameObject freeSpinPanel;
@@ -198,8 +199,13 @@ public class UIManager : MonoBehaviour
 
     internal void UpdatePlayerInfo(PlayerData playerData)
     {
-        playerCurrentWinning.text = playerData.currentWining.ToString();
+        playerCurrentWinning.text = playerData.currentWining.ToString("f3");
         playerBalance.text = playerData.Balance.ToString("f3");
+
+    }
+
+    internal void ResetWinning(){
+        playerBalance.text = "0";
 
     }
 
@@ -373,6 +379,8 @@ public class UIManager : MonoBehaviour
         if (Bg)
             Bg.SetActive(true);
     }
+
+ 
     internal void CloseFreeSpinPopup(GameObject Bg)
     {
         ClosePopup();
@@ -398,8 +406,12 @@ public class UIManager : MonoBehaviour
             case 3:
                 specialWinTitle.sprite = winTitleSprites[2];
                 break;
+            case 4:
+                specialWinTitle.sprite = winTitleSprites[3];
+                break;
         }
     }
+     
 
     internal void DeductBalanceAnim(double finalAmount, double initAmount)
     {
@@ -462,6 +474,12 @@ public class UIManager : MonoBehaviour
             freeSpinInfo.text = freespinCount.ToString();
         if (winnings >= 0)
             freeSpinWinnings.text = winnings.ToString();
+    }
+    internal void UpdateThunderSpinInfo(int freespinCount = -1)
+    {
+        if (freespinCount >= 0)
+            thunderFreeSpinInfo.text = freespinCount.ToString();
+
     }
 
     private void ToggleMusic()

@@ -12,6 +12,8 @@ public class ThunderSpinIconView : MonoBehaviour
     [SerializeField] internal ImageAnimation anim;
     [SerializeField]internal bool hasValue;
 
+    [SerializeField] internal double value;
+
 
     internal void StartAnim(List<Sprite> animSPrite){
 
