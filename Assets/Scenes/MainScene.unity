@@ -9270,6 +9270,7 @@ MonoBehaviour:
   m_AwakeGameButton: {fileID: 742977646}
   playerCurrentWinning: {fileID: 576684260}
   playerBalance: {fileID: 1666685184}
+  audioController: {fileID: 4884499504835516836}
 --- !u!1001 &378454305
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11318,7 +11319,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c6dee67c9fb64b7bbed44da112a7af7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TestToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDgzY2U1YTI3YmY5MDI0NDNlYjRjMCIsInVzZXJuYW1lIjoic2F5YW4iLCJyb2xlIjoicGxheWVyIiwiaWF0IjoxNzM1ODg2OTEzLCJleHAiOjE3MzY0OTE3MTN9.Slbmd8Ip4dW4Dbv2O33rbEbJ3xvulXyOMm_5Nit5Kw0
+  TestToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDgzY2U1YTI3YmY5MDI0NDNlYjRjMCIsInVzZXJuYW1lIjoic2F5YW4iLCJyb2xlIjoicGxheWVyIiwiaWF0IjoxNzM2NTc4MTAzLCJleHAiOjE3MzcxODI5MDN9.xXVvzg93RmcQCvtGgYXSmkAp_WqJENO_Ivys3-M6JY8
 --- !u!1 &502824392
 GameObject:
   m_ObjectHideFlags: 0
@@ -48348,17 +48349,18 @@ MonoBehaviour:
   audioPlayer_wl: {fileID: 7420317576415862709}
   audioPlayer_button: {fileID: 8161384201886867057}
   audioPlayer_spin_stop: {fileID: 8161384201886867058}
-  sidebar_sound: {fileID: 8161384201886867059}
+  WinningSound: {fileID: 8161384201886867059}
   SpinButtonClip: {fileID: 8300000, guid: 05c83accf18d648ffa57ab40bf0f7315, type: 3}
   SpinStopClip: {fileID: 8300000, guid: 8df91d72a4eb142a3be7c206778e1b49, type: 3}
-  GambleSpinClip: {fileID: 8300000, guid: e5ace1932e3404e07843b1d7d194dbc4, type: 3}
   Button: {fileID: 8300000, guid: af22019bc83314423b6a159a3648dd41, type: 3}
   SmallWin_Audio: {fileID: 8300000, guid: 716cf8121c3314b8593d988cb3411272, type: 3}
   BigWin_Audio: {fileID: 8300000, guid: 9b7afcdb72ca142cc8553b38ae38d616, type: 3}
-  NormalBg_Audio: {fileID: 8300000, guid: d67bec64787df4ae6aaf12231f7f6e28, type: 3}
+  NormalBg_Audio: {fileID: 8300000, guid: 3e9f79c5a9b884cca8ba7b84aa54c8ef, type: 3}
   FreeSpinBg_Audio: {fileID: 8300000, guid: 483d112211e654c2aa4cb5742d292126, type: 3}
   sizeup_audio: {fileID: 8300000, guid: 52bf78399234240b5883575eb667f565, type: 3}
   megaWin: {fileID: 8300000, guid: 8232489734baf4547ad91df53dd58035, type: 3}
+  BonusBg_Audio: {fileID: 8300000, guid: d67bec64787df4ae6aaf12231f7f6e28, type: 3}
+  ByTheOrder: {fileID: 8300000, guid: 337919811ae744f018b4bdbe51ac1347, type: 3}
 --- !u!222 &5269323497495462647
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -50386,7 +50388,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
-  m_Pitch: 1.5
+  m_Pitch: 1
   Loop: 0
   Mute: 0
   Spatialize: 0

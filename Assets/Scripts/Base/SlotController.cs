@@ -118,9 +118,9 @@ public class SlotController : MonoBehaviour
             if (activeBorder != null)
                 activeBorder.SetActive(false);
 
-            StopTweening(Slot_Transform[i], i, GameManager.ImmediateStop, turboMode);
-            if (!GameManager.ImmediateStop)
-                playStopSound?.Invoke();
+            // if (!GameManager.ImmediateStop)
+            //     playStopSound?.Invoke();
+            StopTweening(Slot_Transform[i], i, GameManager.ImmediateStop, turboMode, playStopSound);
 
             if (ignore)
                 IgnoreMask(i);
@@ -320,7 +320,7 @@ public class SlotController : MonoBehaviour
         alltweens.Add(tweener);
     }
 
-    private void StopTweening(Transform slotTransform, int index, bool immediateStop, bool turboMode)
+    private void StopTweening(Transform slotTransform, int index, bool immediateStop, bool turboMode, Action StopSpinAudioAction)
     {
 
         float delay = 0.2f;
@@ -332,7 +332,11 @@ public class SlotController : MonoBehaviour
             delay = 0f;
 
         alltweens[index].Pause();
+        if(!immediateStop){
+            StopSpinAudioAction?.Invoke();
+        }
         slotTransform.localPosition = new Vector2(slotTransform.localPosition.x, initialPos + 265);
+        
         alltweens[index] = slotTransform.DOLocalMoveY(initialPos, delay).SetEase(Ease.OutFlash);
     }
     private void KillAllTweens()

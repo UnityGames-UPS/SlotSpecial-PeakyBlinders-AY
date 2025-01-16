@@ -9,13 +9,11 @@ public class AudioController : MonoBehaviour
     [SerializeField] private AudioSource audioPlayer_wl;
     [SerializeField] private AudioSource audioPlayer_button;
     [SerializeField] private AudioSource audioPlayer_spin_stop;
-    [SerializeField] private AudioSource sidebar_sound;
-
+    [SerializeField] private AudioSource WinningSound;
 
     [Header("clips")]
     [SerializeField] private AudioClip SpinButtonClip;
     [SerializeField] private AudioClip SpinStopClip;
-    [SerializeField] private AudioClip GambleSpinClip;
     [SerializeField] private AudioClip Button;
     [SerializeField] private AudioClip SmallWin_Audio;
     [SerializeField] private AudioClip BigWin_Audio;
@@ -23,15 +21,20 @@ public class AudioController : MonoBehaviour
     [SerializeField] private AudioClip FreeSpinBg_Audio;
     [SerializeField] private AudioClip sizeup_audio;
     [SerializeField] private AudioClip megaWin;
+    [SerializeField] private AudioClip BonusBg_Audio;
+    [SerializeField] private AudioClip ByTheOrder;
 
 
     private void Awake()
     {
-        sidebar_sound.clip=sizeup_audio;
         playBgAudio();
-
         //if (bg_adudio) bg_adudio.Play();
         //audioPlayer_button.clip = clips[clips.Length - 1];
+    }
+
+    internal void PlayByTheOrderAudio(){
+        WinningSound.clip=ByTheOrder;
+        WinningSound.Play();
     }
 
     internal void PlayWLAudio(string type = "default")
@@ -78,7 +81,7 @@ public class AudioController : MonoBehaviour
             audioPlayer_wl.Pause();
             audioPlayer_button.Pause();
             audioPlayer_spin_stop.Pause();
-            sidebar_sound.Pause();
+            WinningSound.Pause();
 
         }
         else
@@ -87,7 +90,7 @@ public class AudioController : MonoBehaviour
             audioPlayer_wl.UnPause();
             audioPlayer_button.UnPause();
             audioPlayer_spin_stop.UnPause();
-            sidebar_sound.UnPause();
+            WinningSound.UnPause();
 
 
         }
@@ -106,6 +109,8 @@ public class AudioController : MonoBehaviour
         {
             if (type == "FP")
                 bg_adudio.clip = FreeSpinBg_Audio;
+            else if(type == "Bonus")
+                bg_adudio.clip = BonusBg_Audio;
             else
                 bg_adudio.clip = NormalBg_Audio;
 
@@ -134,14 +139,6 @@ public class AudioController : MonoBehaviour
         audioPlayer_wl.Stop();
         audioPlayer_wl.loop = false;
         audioPlayer_wl.pitch = 1f;
-
-    }
-
-    internal void PlaySizeUpSound(bool play){
-        if(play)
-        sidebar_sound.Play();
-        else
-        sidebar_sound.Stop();
 
     }
 
@@ -176,12 +173,14 @@ public class AudioController : MonoBehaviour
                 break;
             case "wl":
                 audioPlayer_wl.mute = toggle;
+                WinningSound.mute=toggle;
                 break;
             case "all":
                 bg_adudio.mute = toggle;
                 audioPlayer_button.mute = toggle;
                 audioPlayer_spin_stop.mute = toggle;
                 audioPlayer_wl.mute = toggle;
+                WinningSound.mute=toggle;
                 break;
 
 

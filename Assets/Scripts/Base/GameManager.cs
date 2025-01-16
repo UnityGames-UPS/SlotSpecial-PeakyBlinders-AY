@@ -320,7 +320,7 @@ public class GameManager : MonoBehaviour
         uIManager.ToggleFreeSpinPanel(false);
         // yield return new WaitForSeconds(1f);
         StopAllWinAnimation();
-        audioController.playBgAudio("FP");
+        audioController.playBgAudio();
         ToggleButtonGrp(true);
         isSpinning = false;
         isFreeSpin = false;
@@ -448,7 +448,7 @@ public class GameManager : MonoBehaviour
             paylineSymbolAnimPanel.gameObject.SetActive(false);
             // uIManager.CloseFreeSpinPopup();
             freeSpinRoutine = StartCoroutine(FreeSpinRoutine());
-            audioController.playBgAudio("FP");
+            audioController.playBgAudio("Bonus");
 
             yield break;
         }
@@ -472,7 +472,7 @@ public class GameManager : MonoBehaviour
             paylineSymbolAnimPanel.gameObject.SetActive(false);
             // uIManager.CloseFreeSpinPopup();
             freeSpinRoutine = StartCoroutine(FreeSpinRoutine());
-            audioController.playBgAudio("FP");
+            audioController.playBgAudio("Bonus");
             yield break;
 
 
@@ -579,7 +579,7 @@ public class GameManager : MonoBehaviour
     }
     IEnumerator OnSpinEnd()
     {
-        audioController.StopSpinAudio();
+        // audioController.StopSpinAudio();
         SingleLoopAnimation(true);
 
         uIManager.UpdatePlayerInfo(SocketModel.playerData);
