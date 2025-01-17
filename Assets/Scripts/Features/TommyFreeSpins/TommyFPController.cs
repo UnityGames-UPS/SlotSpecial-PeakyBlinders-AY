@@ -42,7 +42,6 @@ public class TommyFPController : MonoBehaviour
     [SerializeField] private List<Sprite> ID_8;
     [SerializeField] private List<Sprite> ID_9;
     [SerializeField] private List<Sprite> ID_10;
-
     int colIndex = -1;
         int id = -1;
 
@@ -63,6 +62,7 @@ public class TommyFPController : MonoBehaviour
             yield return spin = StartCoroutine(SpinRoutine(StartColossalSpin, StopTweening, false, false, 0.5f, 0.5f));
             UpdateUI?.Invoke(-1, SocketModel.playerData.currentWining);
             colIndex=-1;
+            id=-1;
             if (SocketModel.resultGameData.freeSpinAdded)
             {
                 if (spin != null)
@@ -104,7 +104,7 @@ public class TommyFPController : MonoBehaviour
     private void StartColossalSpin()
     {
         colIndex = FindColIndex(SocketModel.resultGameData.ResultReel);
-        if (colIndex < 0)
+        if (colIndex < 0 || id<0)
             return;
             colossalIcon.StopAnimation();
 
@@ -124,7 +124,7 @@ public class TommyFPController : MonoBehaviour
 
     private void StopTweening()
     {
-        if (colIndex < 0)
+        if (colIndex < 0 || id<0)
             return;
             PopulateSpriteNAnim(id);
         alltweens?.Pause();
@@ -156,7 +156,8 @@ public class TommyFPController : MonoBehaviour
     private int FindColIndex(List<List<int>> resultReel)
     {
         List<string> convertedmatrix = Helper.Convert2dToLinearMatrix(resultReel);
-
+        int index=-1;
+        id=-1;
         for (int i = 0; i < convertedmatrix.Count; i++)
         {
             if (i + 2 < convertedmatrix.Count)
@@ -164,7 +165,7 @@ public class TommyFPController : MonoBehaviour
 
                 if (convertedmatrix[i] == convertedmatrix[i + 1] && convertedmatrix[i + 1] == convertedmatrix[i + 2])
                 {
-                    colIndex = i;
+                    index = i;
                     id = SocketModel.resultGameData.ResultReel[0][i];
                     break;
                 }
@@ -174,7 +175,7 @@ public class TommyFPController : MonoBehaviour
 
 
         Debug.Log(colIndex);
-        return colIndex;
+        return index;
 
 
     }
