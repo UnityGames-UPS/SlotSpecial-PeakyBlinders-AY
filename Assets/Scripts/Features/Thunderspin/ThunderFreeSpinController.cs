@@ -28,7 +28,7 @@ public class ThunderFreeSpinController : MonoBehaviour
     [SerializeField] private TMP_Text totalWinning_value;
     internal Action StopAllWinAnimation;
     private double currentTotalWinning;
-
+    internal Action PlayStopSpinAudio;
     internal Action<double> thunderWinPopup;
 
     [SerializeField]private GameObject thundeSpinInfo_object;
@@ -191,7 +191,7 @@ public class ThunderFreeSpinController : MonoBehaviour
                 {
                     icon.coinText.gameObject.SetActive(false);
                 }
-
+                PlayStopSpinAudio?.Invoke();
                 icon.image.transform.DOLocalMoveY(0, 0.15f).SetEase(Ease.Linear);
                 icon.StartAnim(animSprite);
                 totalDelay += 0.15f;
@@ -215,6 +215,8 @@ public class ThunderFreeSpinController : MonoBehaviour
                 }
 
             }
+            PlayStopSpinAudio?.Invoke();
+
                     // totalDelay += 0.15f;
             // yield return new WaitForSeconds(0.15f);
         }

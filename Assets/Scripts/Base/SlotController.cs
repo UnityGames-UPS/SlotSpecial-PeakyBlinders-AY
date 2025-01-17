@@ -161,9 +161,8 @@ public class SlotController : MonoBehaviour
 
         }
 
-        if (GameManager.ImmediateStop)
+        if (GameManager.ImmediateStop && !GameManager.thunderFreeSpins)
         {
-
             playStopSound?.Invoke();
             yield return new WaitForSeconds(0.15f);
         }
@@ -329,15 +328,17 @@ public class SlotController : MonoBehaviour
             delay = 0.1f;
 
         if (immediateStop)
-            delay = 0f;
+            delay = 0.05f;
 
         alltweens[index].Pause();
-        if(!immediateStop){
-            StopSpinAudioAction?.Invoke();
-        }
+        
         slotTransform.localPosition = new Vector2(slotTransform.localPosition.x, initialPos + 265);
         
-        alltweens[index] = slotTransform.DOLocalMoveY(initialPos, delay).SetEase(Ease.OutFlash);
+        alltweens[index] = slotTransform.DOLocalMoveY(initialPos, delay).SetEase(Ease.OutFlash).OnComplete(()=>{
+            if(!immediateStop && !GameManager.thunderFreeSpins){
+                StopSpinAudioAction?.Invoke();
+            }
+        });
     }
     private void KillAllTweens()
     {

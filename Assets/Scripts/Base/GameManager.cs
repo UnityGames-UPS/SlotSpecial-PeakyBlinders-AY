@@ -157,6 +157,7 @@ public class GameManager : MonoBehaviour
         thunderFP.FreeSpinPopUPOverlay = uIManager.OpenFreeSpinPopupOverlay;
         thunderFP.StopAllWinAnimation = StopAllWinAnimation;
         thunderFP.thunderWinPopup = ThunderWinPopups;
+        thunderFP.PlayStopSpinAudio = audioController.PlaySpinStopAudio;
 
         arthurFP.iconref.AddRange(slotManager.iconImages);
         arthurFP.populateOriginalMatrix = slotManager.PopulateSLotMatrix;

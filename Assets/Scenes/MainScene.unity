@@ -48355,7 +48355,7 @@ MonoBehaviour:
   Button: {fileID: 8300000, guid: af22019bc83314423b6a159a3648dd41, type: 3}
   SmallWin_Audio: {fileID: 8300000, guid: 716cf8121c3314b8593d988cb3411272, type: 3}
   BigWin_Audio: {fileID: 8300000, guid: 9b7afcdb72ca142cc8553b38ae38d616, type: 3}
-  NormalBg_Audio: {fileID: 8300000, guid: 3e9f79c5a9b884cca8ba7b84aa54c8ef, type: 3}
+  NormalBg_Audio: {fileID: 8300000, guid: a0a8394cbeea845a582a3688dd6c3222, type: 3}
   FreeSpinBg_Audio: {fileID: 8300000, guid: 483d112211e654c2aa4cb5742d292126, type: 3}
   sizeup_audio: {fileID: 8300000, guid: 52bf78399234240b5883575eb667f565, type: 3}
   megaWin: {fileID: 8300000, guid: 8232489734baf4547ad91df53dd58035, type: 3}
@@ -49599,7 +49599,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 5d8bcac4aeef74003a7af25dbb03fdf2, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.3
+  m_Volume: 1
   m_Pitch: 1
   Loop: 1
   Mute: 0
