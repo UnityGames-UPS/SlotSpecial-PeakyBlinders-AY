@@ -112,6 +112,7 @@ public class UIManager : MonoBehaviour
     [Header("player texts")]
     [SerializeField] private TMP_Text playerCurrentWinning;
     [SerializeField] private TMP_Text playerBalance;
+    [SerializeField] private AudioController audioController;
 
     private GameObject currentPopup;
 
@@ -363,6 +364,7 @@ public class UIManager : MonoBehaviour
 
         FreeSpinPopupOverlayObject.SetActive(true);
         freeSpinOverLayOpen = true;
+        audioController.PlayByTheOrderAudio();
         Invoke(nameof(CloseFreeSpinPopupOverlay), 1.5f);
     }
     void CloseFreeSpinPopupOverlay()
