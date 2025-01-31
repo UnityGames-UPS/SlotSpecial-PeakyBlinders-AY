@@ -93,16 +93,17 @@ public class GameManager : MonoBehaviour
         SetButton(autoSpinDown, () => OnAutoSpinChange(false));
         SetButton(AutoSpin_Button, () =>
             {
-                ExecuteAutoSpin();
                 uIManager.ClosePopup();
+                audioController.PlayButtonAudio("spin");
+                ExecuteAutoSpin();
             }, true);
         for (int i = 0; i < AutoSpinsButtons.Length; i++)
         {
             int capturedIndex = i; // Capture the current value of 'i'
             AutoSpinsButtons[capturedIndex].onClick.AddListener(() =>
             {
-                ExecuteAutoSpin(autoOptions[capturedIndex]);
                 uIManager.ClosePopup();
+                ExecuteAutoSpin(autoOptions[capturedIndex]);
                 audioController.PlayButtonAudio("spin");
             });
             AutoSpinOptions_Text[i].text = autoOptions[capturedIndex].ToString();
@@ -355,9 +356,8 @@ public class GameManager : MonoBehaviour
 
             }
 
-
-
         }
+
         StopAllWinAnimation();
         autoSpinText.transform.parent.gameObject.SetActive(false);
         autoSpinText.text = "0";
@@ -409,6 +409,7 @@ public class GameManager : MonoBehaviour
     IEnumerator SpinRoutine(Action OnSpinAnimStart = null, Action OnSpinAnimStop = null, bool playBeforeStart = false, bool playBeforeEnd = false, float delay = 0, float delay1 = 0)
     {
         bool start = OnSpinStart();
+
         if (!start)
         {
 
@@ -675,8 +676,8 @@ public class GameManager : MonoBehaviour
         betCounter = index;
         currentTotalBet = SocketModel.initGameData.Bets[betCounter] * totalLies;
         if (totalBet_text) totalBet_text.text = currentTotalBet.ToString();
-        if (currentBalance < currentTotalBet)
-            uIManager.LowBalPopup();
+        // if (currentBalance < currentTotalBet)
+        //     uIManager.LowBalPopup();
     }
 
 
@@ -686,6 +687,7 @@ public class GameManager : MonoBehaviour
     {
         if (winAnim != null)
             StopCoroutine(winAnim);
+
         uIManager.ClosePopup();
         winAnim = null;
         if (amount >= currentTotalBet * 10 && amount < currentTotalBet * 15)
@@ -715,7 +717,6 @@ public class GameManager : MonoBehaviour
         else
         {
             winanimRunning = false;
-
             audioController.PlayWLAudio();
 
         }
@@ -742,7 +743,6 @@ public class GameManager : MonoBehaviour
             audioController.PlayWLAudio("mega");
         else
             audioController.PlayWLAudio();
-
 
     }
 
@@ -846,5 +846,7 @@ public class GameManager : MonoBehaviour
         }
 
     }
+
+
 
 }
