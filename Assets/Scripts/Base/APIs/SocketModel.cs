@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System;
 
-
+//data classes to hold the data from the server
 public static class SocketModel
 {
     public static PlayerData playerData= new PlayerData();

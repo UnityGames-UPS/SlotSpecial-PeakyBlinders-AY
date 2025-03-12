@@ -235,6 +235,7 @@ public class SocketController : MonoBehaviour
         SendData("EXIT");
     }
 
+    // parse the response from the server
     private void ParseResponse(string jsonObject)
     {
         Debug.Log(jsonObject);

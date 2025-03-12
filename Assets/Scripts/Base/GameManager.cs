@@ -182,100 +182,108 @@ public class GameManager : MonoBehaviour
     }
 
 
-    private void SetButton(Button button, Action action, bool slotButton = false)
-    {
-        if (button == null) return;
-
-        button.onClick.RemoveAllListeners();
-        button.onClick.AddListener(() =>
+        // Sets the button with the given action and optional slotButton flag
+        private void SetButton(Button button, Action action, bool slotButton = false)
         {
-            if (slotButton)
-                audioController.PlayButtonAudio("spin");
+            if (button == null) return;
+
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(() =>
+            {
+                if (slotButton)
+                    audioController.PlayButtonAudio("spin");
+                else
+                    audioController.PlayButtonAudio();
+
+                action?.Invoke();
+
+            });
+        }
+
+        // Handles the change in auto spin counter
+        private void OnAutoSpinChange(bool inc)
+        {
+
+            if (audioController) audioController.PlayButtonAudio();
+
+            if (inc)
+            {
+                autoSpinCounter++;
+                if (autoSpinCounter > maxAutoSpinValue)
+                {
+                    autoSpinCounter = 1;
+                }
+            }
             else
-                audioController.PlayButtonAudio();
-
-            action?.Invoke();
-
-        });
-    }
-
-    private void OnAutoSpinChange(bool inc)
-    {
-
-        if (audioController) audioController.PlayButtonAudio();
-
-        if (inc)
-        {
-            autoSpinCounter++;
-            if (autoSpinCounter > maxAutoSpinValue)
             {
-                autoSpinCounter = 1;
+                autoSpinCounter--;
+                if (autoSpinCounter < 1)
+                {
+                    autoSpinCounter = maxAutoSpinValue;
+
+                }
             }
+
+            autoSpinShowText.text = autoSpinCounter.ToString();
+
+
         }
-        else
+
+        // Toggles the turbo mode
+        void ToggleTurboMode()
         {
-            autoSpinCounter--;
-            if (autoSpinCounter < 1)
+            turboMode = !turboMode;
+            if (turboMode)
             {
-                autoSpinCounter = maxAutoSpinValue;
+                // TurboButton.image.sprite = turboActive;
+                turboAnim.SetActive(true);
 
             }
-        }
-
-        autoSpinShowText.text = autoSpinCounter.ToString();
-
-
-    }
-    void ToggleTurboMode()
-    {
-        turboMode = !turboMode;
-        if (turboMode)
-        {
-            // TurboButton.image.sprite = turboActive;
-            turboAnim.SetActive(true);
-
-        }
-        else
-        {
-            // TurboButton.image.sprite = turboInActive;
-            turboAnim.SetActive(false);
-
-
-        }
-
-
-    }
-    void InitGame()
-    {
-        if (!initiated)
-        {
-            initiated = true;
-            betCounter = 0;
-            totalLies = SocketModel.initGameData.lineData.Count;
-            currentTotalBet = SocketModel.initGameData.Bets[betCounter] * totalLies;
-            currentBalance = SocketModel.playerData.Balance;
-            if (currentBalance < currentTotalBet)
+            else
             {
-                uIManager.LowBalPopup();
+                // TurboButton.image.sprite = turboInActive;
+                turboAnim.SetActive(false);
+
+
             }
-            payLineController.paylines.AddRange(SocketModel.initGameData.lineData);
-            if (totalBet_text) totalBet_text.text = currentTotalBet.ToString();
-            uIManager.UpdatePlayerInfo(SocketModel.playerData);
-            uIManager.PopulateSymbolsPayout(SocketModel.uIData, SocketModel.initGameData.Bets[betCounter]);
-            uIManager.PopulateBets(SocketModel.initGameData.Bets, totalLies, OnBetChange);
-            Application.ExternalCall("window.parent.postMessage", "OnEnter", "*");
+
+
         }
-        else
+
+        // Initializes the game and removes loading screen
+        void InitGame()
         {
-            uIManager.PopulateSymbolsPayout(SocketModel.uIData, totalLies);
+            if (!initiated)
+            {
+                initiated = true;
+                betCounter = 0;
+                totalLies = SocketModel.initGameData.lineData.Count;
+                currentTotalBet = SocketModel.initGameData.Bets[betCounter] * totalLies;
+                currentBalance = SocketModel.playerData.Balance;
+                if (currentBalance < currentTotalBet)
+                {
+                    uIManager.LowBalPopup();
+                }
+                payLineController.paylines.AddRange(SocketModel.initGameData.lineData);
+                if (totalBet_text) totalBet_text.text = currentTotalBet.ToString();
+                uIManager.UpdatePlayerInfo(SocketModel.playerData);
+                uIManager.PopulateSymbolsPayout(SocketModel.uIData, SocketModel.initGameData.Bets[betCounter]);
+                uIManager.PopulateBets(SocketModel.initGameData.Bets, totalLies, OnBetChange);
+                Application.ExternalCall("window.parent.postMessage", "OnEnter", "*");
+            }
+            else
+            {
+                uIManager.PopulateSymbolsPayout(SocketModel.uIData, totalLies);
+            }
+
+
         }
 
 
-    }
-
-
+    //Executes spin
     void ExecuteSpin() => StartCoroutine(SpinRoutine());
 
+    // Executes auto spin with the given number of spins
     void ExecuteAutoSpin(int noOfSPin = 0)
     {
         if (noOfSPin <= 0)
@@ -302,6 +310,7 @@ public class GameManager : MonoBehaviour
 
     }
 
+    // Coroutine for handling the free spin routine
     IEnumerator FreeSpinRoutine(bool initiate = true)
     {
         ImmediateStop = false;
@@ -315,6 +324,7 @@ public class GameManager : MonoBehaviour
             slotManager.RespectMask(i);
         }
 
+        // Check and start the appropriate free spin mode
         yield return CheckNStartFP(
             arthur: SocketModel.resultGameData.isArthurBonus,
             tommy: SocketModel.resultGameData.isTomBonus,
@@ -337,6 +347,8 @@ public class GameManager : MonoBehaviour
 
         yield return null;
     }
+
+    // Coroutine for handling the auto spin routine
     IEnumerator AutoSpinRoutine(int noOfSPin)
     {
         while (noOfSPin > 0 && isAutoSpin)
@@ -350,13 +362,13 @@ public class GameManager : MonoBehaviour
             if (SocketModel.playerData.currentWining > 0)
             {
                 if (TurboButton)
-                    yield return new WaitForSeconds(2.5f);
+                    yield return new WaitForSeconds(2.5f); // Delay before next spin when there is a win and turbo mode is active
                 else
-                    yield return new WaitForSeconds(3f);
+                    yield return new WaitForSeconds(3f); // Delay before next spin when there is a win
             }
             else
             {
-                yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(1f); // Delay before next spin when there is no win
 
             }
 
@@ -370,6 +382,11 @@ public class GameManager : MonoBehaviour
         yield return null;
     }
 
+ 
+    /// <summary>
+    /// Coroutine for stopping the auto spin.
+    /// </summary>
+    /// <param name="hard">Flag to indicate if the auto spin should stop immediately or wait for the current spin to complete.</param>
     private IEnumerator StopAutoSpinCoroutine(bool hard = false)
     {
         isAutoSpin = false;
@@ -384,19 +401,19 @@ public class GameManager : MonoBehaviour
         {
             StopCoroutine(autoSpinRoutine);
             autoSpinRoutine = null;
-
         }
+
         AutoSpinPopup_Button.gameObject.SetActive(true);
         if (!hard)
             ToggleButtonGrp(true);
         autoSpinText.text = "0";
         yield return null;
-
     }
 
+    // Coroutine for stopping the spin
     IEnumerator StopSpin()
     {
-
+        // Check if auto spin, free spin, thunder free spins, or immediate stop is active
         if (isAutoSpin || isFreeSpin || thunderFreeSpins || ImmediateStop)
             yield break;
 
@@ -406,17 +423,26 @@ public class GameManager : MonoBehaviour
         ImmediateStop = false;
         // StopSpinButton.gameObject.SetActive(false);
         StopSpinButton.interactable = true;
-
-
     }
 
+
+    /// <summary>
+    /// Coroutine for handling the spin routine and shared with all type of free spins.
+    /// </summary>
+    /// <param name="OnSpinAnimStart">Action to be executed when the spin animation starts. used in <param name="OnSpin"</param>
+    /// <param name="OnSpinAnimStop">Action to be executed when the spin animation stops. used in <param name="OnSpin"</param>
+    /// <param name="playBeforeStart">Flag to indicate if any action should be played before the spin animation starts. used in <param name="OnSpin"</param>
+    /// <param name="playBeforeEnd">Flag to indicate if any action should be played before the spin animation ends. used in <param name="OnSpin"</param>
+    /// <param name="delay">Delay for <param name="OnSpinAnimStart"> action </param>
+    /// <param name="delay1">Delay  for <param name="OnSpinAnimStop">Action</param>
     IEnumerator SpinRoutine(Action OnSpinAnimStart = null, Action OnSpinAnimStop = null, bool playBeforeStart = false, bool playBeforeEnd = false, float delay = 0, float delay1 = 0)
     {
+        // Start the spin and check if has sufficient balance
         bool start = OnSpinStart();
 
         if (!start)
         {
-
+            // If the balance not sufficent, stop spinning and handle auto spin
             isSpinning = false;
             if (isAutoSpin)
             {
@@ -427,74 +453,68 @@ public class GameManager : MonoBehaviour
             yield break;
         }
 
-
+        // Deduct balance if not in free spin mode
         if (!isFreeSpin)
             uIManager.DeductBalanceAnim(SocketModel.playerData.Balance - currentTotalBet, SocketModel.playerData.Balance);
 
+        // Execute the spin animation
         yield return OnSpin(OnSpinAnimStart, OnSpinAnimStop, playBeforeStart, playBeforeEnd, delay, delay1);
         yield return OnSpinEnd();
 
+        // Check if there are free spins available
         if (SocketModel.resultGameData.freeSpinCount > 0 && !isFreeSpin)
         {
+            // Stop auto spin if active
             if (autoSpinRoutine != null)
             {
                 yield return StopAutoSpinCoroutine(true);
                 if (autoSpinLeft > 0)
                     autoSpinShouldContinue = true;
             }
+
+            // Update free spin count and UI
             int prevFreeSpin = freeSpinCount;
             freeSpinCount = SocketModel.resultGameData.freeSpinCount;
             uIManager.UpdateFreeSpinInfo(freeSpinCount);
-            // uIManager.FreeSpinPopup(freeSpinCount, true);
-            if (turboMode)
-                yield return new WaitForSeconds(0.5f);
-            else
-                yield return new WaitForSeconds(1f);
 
-            paylineSymbolAnimPanel.gameObject.SetActive(false);
-            // uIManager.CloseFreeSpinPopup();
+            // Start free spin routine
             freeSpinRoutine = StartCoroutine(FreeSpinRoutine());
             audioController.playBgAudio("Bonus");
 
             yield break;
         }
+        // Check if there are thunder free spins available
         else if (SocketModel.resultGameData.thunderSpinCount > 0 && !thunderFreeSpins && !isFreeSpin)
         {
-            int prevFreeSpin = freeSpinCount;
-            freeSpinCount = SocketModel.resultGameData.thunderSpinCount;
-            uIManager.UpdateFreeSpinInfo(freeSpinCount);
+            // Stop auto spin if active
             if (autoSpinRoutine != null)
             {
                 yield return StopAutoSpinCoroutine(true);
                 if (autoSpinLeft > 0)
                     autoSpinShouldContinue = true;
-
             }
-            // uIManager.FreeSpinPopup(freeSpinCount, true);
-            if (turboMode)
-                yield return new WaitForSeconds(0.5f);
-            else
-                yield return new WaitForSeconds(1f);
-            paylineSymbolAnimPanel.gameObject.SetActive(false);
-            // uIManager.CloseFreeSpinPopup();
+
+            // Update free spin count and UI
+            int prevFreeSpin = freeSpinCount;
+            freeSpinCount = SocketModel.resultGameData.thunderSpinCount;
+            uIManager.UpdateFreeSpinInfo(freeSpinCount);
+
+            // Start free spin routine
             freeSpinRoutine = StartCoroutine(FreeSpinRoutine());
             audioController.playBgAudio("Bonus");
             yield break;
-
-
         }
 
+        // If not in auto spin or free spin mode, stop spinning and enable buttons
         if (!isAutoSpin && !isFreeSpin)
         {
-            // symbolAnim = StartCoroutine(PayLineSymbolRoutine());
             isSpinning = false;
             ToggleButtonGrp(true);
         }
-
     }
+    // Starts the spin and handles necessary actions before the spin
     bool OnSpinStart()
     {
-
         // audioController.PlayButtonAudio("spin");
         isSpinning = true;
         winIterationCount = 0;
@@ -504,6 +524,7 @@ public class GameManager : MonoBehaviour
             StopCoroutine(symbolAnim);
 
         StopAllWinAnimation();
+        //check if the balance is sufficient
         if (currentBalance < currentTotalBet && !isFreeSpin)
         {
             uIManager.LowBalPopup();
@@ -518,14 +539,23 @@ public class GameManager : MonoBehaviour
         ToggleButtonGrp(false);
         uIManager.ClosePopup();
         return true;
-
-
     }
 
+    /// <summary>
+    /// Coroutine for handling the spin process.
+    /// </summary>
+    /// <param name="OnSpinStart">Action to be executed when the spin starts. inherited from <param name="SpinRoutine"</param>
+    /// <param name="OnSpinStop">Action to be executed when the spin stops. inherited from <param name="SpinRoutine"</param>
+    /// <param name="playBeforeStart">Flag to indicate if any action should be played before the spin starts. inherited from <param name="SpinRoutine"</param>
+    /// <param name="playBeforeEnd">Flag to indicate if any action should be played before the spin ends. inherited from <param name="SpinRoutine"</param>
+    /// <param name="delay">Delay for <param name="OnSpinAnimStart"> action </param>
+    /// <param name="delay1">Delay  for <param name="OnSpinAnimStop">Action</param>
     internal IEnumerator OnSpin(Action OnSpinStart, Action OnSpinStop, bool playBeforeStart, bool playBeforeEnd, float delay1, float delay2)
     {
         if (!isAutoSpin && !isFreeSpin)
             StopSpinButton.gameObject.SetActive(true);
+
+        // Send spin data to the server
         var spinData = new { data = new { currentBet = betCounter, currentLines = 20, spins = 1 }, id = "SPIN" };
         socketController.SendData("message", spinData);
 
@@ -534,50 +564,57 @@ public class GameManager : MonoBehaviour
         slotManager.CLearAllCoins();
         yield return new WaitUntil(() => SocketController.isResultdone);
         currentBalance = SocketModel.playerData.Balance;
+
         if (!playBeforeStart)
         {
+            // Execute action after the spin starts
             OnSpinStart?.Invoke();
             if (delay1 > 0)
                 yield return new WaitForSeconds(delay1);
         }
 
-
+        // handle turbo mode
         if (!turboMode)
             yield return new WaitForSeconds(0.45f);
         else
             yield return new WaitForSeconds(0.35f);
 
-        // slotManager.StopIconAnimation();
+        // Populate the slot matrix with the result data
         slotManager.PopulateSLotMatrix(SocketModel.resultGameData.ResultReel, SocketModel.resultGameData.frozenIndices);
 
         if (playBeforeEnd)
         {
+            // Execute action before the spin ends
             OnSpinStop?.Invoke();
             if (delay2 > 0)
                 yield return new WaitForSeconds(delay2);
         }
-
+        // Start the spin stop animation
         yield return slotManager.StopSpin(ignore: !thunderFreeSpins,
         playStopSound: audioController.PlaySpinStopAudio,
         isFreeSpin: isFreeSpin,
-         turboMode: turboMode);
+        turboMode: turboMode);
 
         if (!playBeforeEnd)
         {
+            // Execute action after the spin ends
             OnSpinStop?.Invoke();
             if (delay2 > 0)
                 yield return new WaitForSeconds(delay2);
-
         }
 
         if (StopSpinButton.gameObject.activeSelf)
             StopSpinButton.gameObject.SetActive(false);
-
-
     }
+
+
+    // Coroutine for handling the end of the spin.
+  
     IEnumerator OnSpinEnd()
     {
         // audioController.StopSpinAudio();
+
+        //showing all win lines and symbols animation once
         SingleLoopAnimation(true);
 
         uIManager.UpdatePlayerInfo(SocketModel.playerData);
@@ -604,16 +641,19 @@ public class GameManager : MonoBehaviour
 
         if (isAutoSpin || isFreeSpin)
         {
+            //showing all win lines animation once
             SingleLoopAnimation();
             yield break;
         }
 
         if (SocketModel.resultGameData.linesToEmit.Count == 1)
         {
+            //showing all win lines animation once
             SingleLoopAnimation();
             yield break;
         }
 
+        //showing all win lines animation by iteration
         if (SocketModel.resultGameData.linesToEmit.Count > 1)
         {
             symbolAnim = StartCoroutine(PayLineSymbolRoutine(false));
@@ -621,6 +661,10 @@ public class GameManager : MonoBehaviour
         yield return null;
     }
 
+    /// <summary>
+    /// Executes a single loop animation for the symbols and paylines.
+    /// </summary>
+    /// <param name="showall">Flag to indicate if all animations should be shown.</param>
     private void SingleLoopAnimation(bool showall = false)
     {
         if (SocketModel.resultGameData.symbolsToEmit.Count > 0)
@@ -628,7 +672,6 @@ public class GameManager : MonoBehaviour
             paylineSymbolAnimPanel.gameObject.SetActive(true);
             slotManager.StartIconAnimation(Helper.RemoveDuplicates(SocketModel.resultGameData.symbolsToEmit), paylineSymbolAnimPanel);
         }
-
 
         if (SocketModel.resultGameData.linesToEmit.Count > 0)
         {
@@ -654,6 +697,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // Toggles the interactability of the buttons in during the spin
     void ToggleButtonGrp(bool toggle)
     {
         if (SlotStart_Button) SlotStart_Button.interactable = toggle;
@@ -664,6 +708,10 @@ public class GameManager : MonoBehaviour
         if (infoButton) infoButton.interactable = toggle;
     }
 
+    /// <summary>
+    /// Handles the change in bet counter and updates the total bet.
+    /// </summary>
+    /// <param name="index">The index of the selected bet.</param>
     private void OnBetChange(int index)
     {
         if (audioController) audioController.PlayButtonAudio();
@@ -679,6 +727,10 @@ public class GameManager : MonoBehaviour
 
 
 
+    /// <summary>
+    /// Checks and displays win popups based on the amount won.
+    /// </summary>
+    /// <param name="amount">The amount won.</param>
     void CheckWinPopups(double amount)
     {
         if (winAnim != null)
@@ -719,6 +771,7 @@ public class GameManager : MonoBehaviour
 
     }
 
+    // Handles win popups and audio for Thunder Free Spins
     void ThunderWinPopups(double amount)
     {
         if (winAnim != null)
@@ -729,19 +782,21 @@ public class GameManager : MonoBehaviour
         winAnim = StartCoroutine(uIManager.WinTextAnim(SocketModel.playerData.currentWining));
         Invoke(nameof(StopWinAnimImmediate), 2.5f);
 
+        // Play different audio based on the amount won
         if (amount >= currentTotalBet * 10 && amount < currentTotalBet * 15)
             audioController.PlayWLAudio("big");
-
         else if (amount >= currentTotalBet * 15 && amount < currentTotalBet * 20)
             audioController.PlayWLAudio("big");
-
         else if (amount >= currentTotalBet * 20)
             audioController.PlayWLAudio("mega");
         else
             audioController.PlayWLAudio();
-
     }
 
+    /// <summary>
+    /// Coroutine for handling the animation of payline symbols.
+    /// </summary>
+    /// <param name="oneTime">Flag to indicate if the iteration should be played only once.</param>
     IEnumerator PayLineSymbolRoutine(bool oneTime)
     {
         if (SocketModel.resultGameData.symbolsToEmit.Count == 0)
@@ -755,7 +810,6 @@ public class GameManager : MonoBehaviour
         {
             for (int i = 0; i < SocketModel.resultGameData.linesToEmit.Count; i++)
             {
-
                 slotManager.PlaySymbolAnim(SocketModel.resultGameData.symbolsToEmit[i], paylineSymbolAnimPanel);
                 payLineController.GeneratePayline(SocketModel.resultGameData.linesToEmit[i]);
                 if (turboMode)
@@ -764,30 +818,28 @@ public class GameManager : MonoBehaviour
                     yield return new WaitForSeconds(0.75f);
                 payLineController.ResetLines();
                 slotManager.StopSymbolAnim(SocketModel.resultGameData.symbolsToEmit[i]);
-
             }
             if (oneTime)
                 loopDuration--;
             yield return null;
         }
-        // if(oneTime)
         SingleLoopAnimation();
-
     }
 
+    // Stops the win animation immediately.
     void StopWinAnimImmediate()
     {
         // if(!isFreeSpin && !thunderFreeSpins){
-
+        
         if (winAnim != null)
             StopCoroutine(winAnim);
         uIManager.ClosePopup();
         winanimRunning = false;
         // }
-
     }
 
 
+    //Stops all win animations and resets the game state.
     void StopAllWinAnimation()
     {
         if (winAnim != null)
@@ -799,21 +851,29 @@ public class GameManager : MonoBehaviour
         paylineSymbolAnimPanel.gameObject.SetActive(false);
     }
 
+    /// <summary>
+    /// Coroutine for checking and starting the appropriate free spin based on the selected character coming from backend.
+    /// </summary>
+    /// <param name="arthur">Flag to indicate if Arthur free spin should be started.</param>
+    /// <param name="polly">Flag to indicate if Polly free spin should be started.</param>
+    /// <param name="thunder">Flag to indicate if Thunder free spin should be started.</param>
+    /// <param name="tommy">Flag to indicate if Tommy free spin should be started.</param>
+    /// <param name="initiate">Flag to indicate if the free spin should be initiated.</param>
     IEnumerator CheckNStartFP(bool arthur, bool polly, bool thunder, bool tommy, bool initiate = true)
     {
-
         slotManager.ResetAllSymbols();
+
         if (arthur && !polly && !thunder && !tommy)
         {
             yield return arthurFP.StartFP(
-            originalReel: originalReel,
-            count: SocketModel.resultGameData.freeSpinCount,
-            initiate: initiate);
+                originalReel: originalReel,
+                count: SocketModel.resultGameData.freeSpinCount,
+                initiate: initiate);
         }
         else if (!arthur && polly && !thunder && !tommy)
         {
             yield return pollyFP.StartFP(
-           count: SocketModel.resultGameData.freeSpinCount);
+                count: SocketModel.resultGameData.freeSpinCount);
         }
         else if (!arthur && !polly && thunder && !tommy)
         {
@@ -826,21 +886,17 @@ public class GameManager : MonoBehaviour
             );
 
             thunderFreeSpins = false;
-
         }
-
         else if (!arthur && !polly && !thunder && tommy)
         {
             yield return tommyFP.StartFP(
-            count: SocketModel.resultGameData.freeSpinCount);
+                count: SocketModel.resultGameData.freeSpinCount);
         }
-
         else
         {
-            Debug.Log("More thean two is true");
+            Debug.Log("More than two flags are true");
             yield break;
         }
-
     }
 
 

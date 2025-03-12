@@ -33,9 +33,10 @@ public class PollyFreeSpinController : MonoBehaviour
 
     internal IEnumerator StartFP(int count)
     {
+        //play by the order of peaky blider animation
         FreeSpinPopUPOverlay?.Invoke();
         yield return new WaitWhile(()=>!UIManager.freeSpinOverLayOpen);
-
+        // show user freespin count and specific BG
         FreeSpinPopUP?.Invoke(count, pollySpinBg);
         yield return new WaitForSeconds(1.8f);
         FreeSpinPopUpClose?.Invoke(pollySpinBg);
@@ -47,8 +48,10 @@ public class PollyFreeSpinController : MonoBehaviour
         {
             count--;
             UpdateUI?.Invoke(count, -1);
+            //start spinning the slot with specific action after the spin and before the spin
             yield return spin = StartCoroutine(SpinRoutine(SetBorder, ReSetBorder, false, false, 0, 0f));
             UpdateUI?.Invoke(-1, SocketModel.playerData.currentWining);
+            //free spin added
             if (SocketModel.resultGameData.freeSpinAdded)
             {
                 if (spin != null)
@@ -63,7 +66,7 @@ public class PollyFreeSpinController : MonoBehaviour
 
 
             }
-
+            //thunder spin added
             if (SocketModel.resultGameData.thunderSpinCount > 0)
             {
                 if (spin != null)
@@ -87,17 +90,20 @@ public class PollyFreeSpinController : MonoBehaviour
         border.parent.gameObject.SetActive(false);
 
     }
+
+    //for border animation
     internal void SetBorder()
     {
         int colIndex = FindColIndex();
         if (colIndex < 0)
             return;
-
+        //set the border position according to the column index
         border.transform.localPosition = originalPos;
         border.transform.localPosition += new Vector3((noOfColumns - 1) * 132 + colIndex * 267.5f, 0);
         border.sizeDelta = new Vector2(274 * noOfColumns + (63 * 2), 820);
         border.localScale = new Vector3(1, 0.02f, 1);
         border.gameObject.SetActive(true);
+        //for flare aniamtion
         for (int i = colIndex; i < colIndex + noOfColumns; i++)
         {
             int index = i;
@@ -123,8 +129,11 @@ public class PollyFreeSpinController : MonoBehaviour
     private int FindColIndex()
     {
         int index = -1;
+        //converts restult reel to linear matrix of string coulmn wise 
 
         List<string> convertedmatrix = Helper.Convert2dToLinearMatrix(SocketModel.resultGameData.ResultReel);
+
+        //check for consicutives 3 same columns and its start index
 
         for (int i = 0; i < convertedmatrix.Count; i++)
         {

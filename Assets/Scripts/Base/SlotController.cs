@@ -64,6 +64,7 @@ public class SlotController : MonoBehaviour
         }
     }
 
+    //populate slot matrix with result data
     internal void PopulateSLotMatrix(List<List<int>> resultData, List<List<double>> coins = null)
     {
 
@@ -87,6 +88,7 @@ public class SlotController : MonoBehaviour
         }
     }
 
+    //to respect mask or not
     internal void RespectMask(int i)
     {
 
@@ -97,7 +99,7 @@ public class SlotController : MonoBehaviour
         // matrixRowCount++;
     }
 
-
+    //to ignore mask or not
     private void IgnoreMask(int i)
     {
 
@@ -109,6 +111,8 @@ public class SlotController : MonoBehaviour
         // matrixRowCount++;
 
     }
+
+    //stop spin animation
     internal IEnumerator StopSpin(bool ignore = true, Action playStopSound = null, bool isFreeSpin = false, bool turboMode = false)
     {
         GameObject activeBorder = null;
@@ -125,6 +129,7 @@ public class SlotController : MonoBehaviour
             if (ignore)
                 IgnoreMask(i);
 
+            // for generating border in i+1 column
             if (!isFreeSpin && !GameManager.ImmediateStop && !turboMode)
             {
                 for (int j = 0; j < SocketModel.resultGameData.ResultReel.Count; j++)
@@ -172,6 +177,7 @@ public class SlotController : MonoBehaviour
 
     }
 
+    // to shuffle slot matrix
     internal void shuffleInitialMatrix()
     {
         for (int i = 0; i < slotMatrix.Count; i++)
@@ -185,7 +191,7 @@ public class SlotController : MonoBehaviour
     }
 
 
-
+    //getting icon pos data as string and animating it
     internal void StartIconAnimation(List<string> iconPos, Transform paylineSymbolAnimPanel)
     {
         SlotIconView tempIcon;
@@ -212,6 +218,9 @@ public class SlotController : MonoBehaviour
         }
 
     }
+
+    //getting icon pos data as int array int array and animating it above is same method but used polymorphi
+
     internal void StartIconAnimation(List<List<int>> iconPos, Transform paylineSymbolAnimPanel)
     {
         SlotIconView tempIcon;

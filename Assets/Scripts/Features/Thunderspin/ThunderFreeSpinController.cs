@@ -12,7 +12,7 @@ public class ThunderFreeSpinController : MonoBehaviour
     [SerializeField] Sprite noValue;
     [SerializeField] internal List<Sprite> imageRef;
     [SerializeField] List<Sprite> animSprite;
-    float totalDelay=14*0.15f;
+    float totalDelay = 14 * 0.15f;
     Coroutine Spin;
     internal Func<Action, Action, bool, bool, float, float, IEnumerator> SpinRoutine;
 
@@ -31,82 +31,102 @@ public class ThunderFreeSpinController : MonoBehaviour
     internal Action PlayStopSpinAudio;
     internal Action<double> thunderWinPopup;
 
-    [SerializeField]private GameObject thundeSpinInfo_object;
-    [SerializeField]private TMP_Text thundeSpinInfo_Text;
+    [SerializeField] private GameObject thundeSpinInfo_object;
+    [SerializeField] private TMP_Text thundeSpinInfo_Text;
     internal IEnumerator StartFP(List<List<double>> froxenIndeces, int count, List<List<int>> ResultReel)
     {
-        GameManager.thunderFreeSpins=true;
+
+        GameManager.thunderFreeSpins = true;
+        //play by the order of peaky blider animation
         FreeSpinPopUPOverlay?.Invoke();
         thundeSpinInfo_object.SetActive(true);
         yield return new WaitWhile(() => UIManager.freeSpinOverLayOpen);
+        // show user freespin count and specific BG
         FreeSpinPopUP?.Invoke(count, thunderSpinBg);
         yield return new WaitForSeconds(1.8f);
         FreeSpinPopUpClose?.Invoke(thunderSpinBg);
         horizontalbar.SetActive(true);
+        // Initiate the thunder spin with the frozen indices of current spin
         Initiate(froxenIndeces);
         StopAllWinAnimation?.Invoke();
         // ResetIcon(false, true);
         yield return new WaitForSeconds(0.3f);
-        totalDelay=froxenIndeces.Count*0.15f;
+        totalDelay = froxenIndeces.Count * 0.15f;
 
         while (count > 0)
         {
             count--;
-            thundeSpinInfo_Text.text=count.ToString();
+            thundeSpinInfo_Text.text = count.ToString();
             // UpdateInfo?.Invoke(count);
             // ResetIcon(false);
+
+            //start spinning the slot with specific action after the spin and before the spin
             Spin = StartCoroutine(SpinRoutine(() => ResetIcon(false), CloseIcon, false, true, 0.2f, totalDelay));
             yield return Spin;
-            totalDelay = SocketModel.resultGameData.frozenIndices.Count*0.15f;
+
+            // Calculate the total delay based on the number of frozen indices  in the current spin for next spin
+            totalDelay = SocketModel.resultGameData.frozenIndices.Count * 0.15f;
+
+            // Check if additional thunder spins were added
             if (SocketModel.resultGameData.thunderSpinAdded)
             {
                 if (Spin != null)
                     StopCoroutine(Spin);
+
+                // Calculate the number of additional free spins added
                 int prevFreeSpin = count;
                 count = SocketModel.resultGameData.thunderSpinCount;
                 int freeSpinAdded = count - prevFreeSpin;
-                thundeSpinInfo_Text.text=count.ToString();
+                thundeSpinInfo_Text.text = count.ToString();
+
+                // Show the free spin popup with the number of additional free spins
                 FreeSpinPopUP?.Invoke(freeSpinAdded, null);
                 yield return new WaitForSeconds(1.5f);
+
+                // Close the free spin popup
                 FreeSpinPopUpClose?.Invoke(null);
             }
+
+            // Check if the grand prize was won and break the loop
             if (SocketModel.resultGameData.isGrandPrize)
                 break;
 
+            // Delay before the next spin based on the current winning amount
             if (SocketModel.playerData.currentWining > 0)
                 yield return new WaitForSeconds(3f);
             else
                 yield return new WaitForSeconds(1f);
-
         }
 
+        // for adding all coin text to total winning value animation
         for (int i = 0; i < SpinMatrix.Count; i++)
         {
             for (int j = 0; j < SpinMatrix[i].row.Count; j++)
             {
-
                 if (SpinMatrix[i].row[j].hasValue)
                 {
                     DOTween.Kill(SpinMatrix[i].row[j].coinText.transform);
+
                     if (!SpinMatrix[i].row[j].coinText.gameObject.activeSelf)
                         SpinMatrix[i].row[j].coinText.gameObject.SetActive(true);
 
                     SpinMatrix[i].row[j].coinText.transform.SetParent(totalWinning_value.transform.parent);
+
                     SpinMatrix[i].row[j].coinText.transform.DOLocalMove(Vector3.zero, 0.6f).SetEase(Ease.Linear);
                     yield return new WaitForSeconds(0.6f);
+
                     if (SpinMatrix[i].row[j].coinText.gameObject.activeSelf)
                         SpinMatrix[i].row[j].coinText.gameObject.SetActive(false);
 
                     currentTotalWinning += SpinMatrix[i].row[j].value;
-                    totalWinning_value.text = currentTotalWinning.ToString()+"X";
+                    totalWinning_value.text = currentTotalWinning.ToString() + "X";
                 }
-
             }
         }
         // yield return new WaitForSeconds(1f);
-        GameManager.winanimRunning=true;
+        GameManager.winanimRunning = true;
         thunderWinPopup?.Invoke(SocketModel.playerData.currentWining);
-        yield return new WaitUntil(()=>!GameManager.winanimRunning);
+        yield return new WaitUntil(() => !GameManager.winanimRunning);
         for (int i = 0; i < SpinMatrix.Count; i++)
         {
             for (int j = 0; j < SpinMatrix[i].row.Count; j++)
@@ -118,10 +138,11 @@ public class ThunderFreeSpinController : MonoBehaviour
 
             }
         }
+        //reset the thunder spin
         StopAllWinAnimation?.Invoke();
         populateOriginalMatrix?.Invoke(ResultReel, froxenIndeces);
         thundeSpinInfo_object.SetActive(false);
-        thundeSpinInfo_Text.text="0";
+        thundeSpinInfo_Text.text = "0";
 
         thunderSpinLayer.SetActive(false);
         ResetIcon(true);
@@ -129,12 +150,13 @@ public class ThunderFreeSpinController : MonoBehaviour
 
         currentTotalWinning = 0;
         totalWinning_value.text = currentTotalWinning.ToString("f3");
-        GameManager.thunderFreeSpins=false;
+        GameManager.thunderFreeSpins = false;
 
         yield return null;
     }
 
 
+    // Initiate the thunder spin with the frozen indices of current spin 
     void Initiate(List<List<double>> froxenIndeces)
     {
         ThunderSpinIconView icon = null;
@@ -146,6 +168,7 @@ public class ThunderFreeSpinController : MonoBehaviour
             icon.image.sprite = imageRef[(int)froxenIndeces[i][3]];
             icon.value = froxenIndeces[i][2];
             icon.coinText.text = froxenIndeces[i][2].ToString() + "X";
+            // if the symbol is a coin symbol show the coin text else not
             if ((int)froxenIndeces[i][3] == 13)
             {
                 icon.coinText.gameObject.SetActive(true);
@@ -175,6 +198,7 @@ public class ThunderFreeSpinController : MonoBehaviour
 
             icon = SpinMatrix[(int)SocketModel.resultGameData.frozenIndices[i][0]].row[(int)SocketModel.resultGameData.frozenIndices[i][1]];
 
+            // if the icon is not already set
             if (!icon.hasValue)
             {
                 DOTween.Kill(icon.image.transform);
@@ -183,6 +207,7 @@ public class ThunderFreeSpinController : MonoBehaviour
                 icon.hasValue = true;
                 icon.value = SocketModel.resultGameData.frozenIndices[i][2];
                 icon.coinText.text = icon.value.ToString() + "X";
+                //if the symbol is a coin symbol show the coin text else not
                 if ((int)SocketModel.resultGameData.frozenIndices[i][3] == 13)
                 {
                     icon.coinText.gameObject.SetActive(true);
@@ -200,6 +225,7 @@ public class ThunderFreeSpinController : MonoBehaviour
 
         }
 
+        // remove the coin text and prpare for next spin
         for (int i = 0; i < SpinMatrix.Count; i++)
         {
             for (int j = 0; j < SpinMatrix[i].row.Count; j++)
@@ -217,13 +243,14 @@ public class ThunderFreeSpinController : MonoBehaviour
             }
             PlayStopSpinAudio?.Invoke();
 
-                    // totalDelay += 0.15f;
+            // totalDelay += 0.15f;
             // yield return new WaitForSeconds(0.15f);
         }
 
         Debug.Log("total dealy" + totalDelay);
     }
 
+    // reset the slot icon. hard reset will reset all the icon and soft reset will reset only the icons which are not set.
     void ResetIcon(bool hard, bool atonce = false)
     {
         for (int i = 0; i < SpinMatrix.Count; i++)
@@ -252,6 +279,8 @@ public class ThunderFreeSpinController : MonoBehaviour
         }
     }
 
+
+    //class to store slotmatrix
 
     [Serializable]
     public class rows

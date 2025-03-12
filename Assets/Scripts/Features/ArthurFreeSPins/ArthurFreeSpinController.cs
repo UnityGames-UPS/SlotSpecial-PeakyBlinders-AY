@@ -37,13 +37,15 @@ public class ArthurFreeSpinController : MonoBehaviour
 
     internal IEnumerator StartFP(GameObject originalReel, int count, bool initiate = true)
     {
+         //play by the order of peaky blider animation
         FreeSpinPopUPOverlay?.Invoke();
         yield return new WaitWhile(() => UIManager.freeSpinOverLayOpen);
-
+        // show user freespin count and specific BG
         FreeSpinPopUP?.Invoke(count, arthurSpinBg);
         yield return new WaitForSeconds(1.8f);
         FreeSpinPopUpClose?.Invoke(arthurSpinBg);
 
+        // initiate if it is not free spin in free spin
         if (initiate)
             yield return InitiateFreeSpins(originalReel);
 
@@ -52,6 +54,7 @@ public class ArthurFreeSpinController : MonoBehaviour
         {
             count--;
             UpdateUI?.Invoke(count, -1);
+            // start the spin with specific action before and after the spin
             yield return spin = StartCoroutine(SpinRoutine(null, null, false, false, 0, 0));
             UpdateUI?.Invoke(-1, SocketModel.playerData.currentWining);
             if (SocketModel.resultGameData.freeSpinAdded)
@@ -70,6 +73,7 @@ public class ArthurFreeSpinController : MonoBehaviour
 
             }
 
+            // if thunder spin is added
             if (SocketModel.resultGameData.thunderSpinCount > 0)
             {
                 if (spin != null)
@@ -97,6 +101,7 @@ public class ArthurFreeSpinController : MonoBehaviour
     IEnumerator InitiateFreeSpins(GameObject originalReel)
     {
 
+        //popualte the psudo matrix  with random values
         for (int i = 0; i < slotMatrix.Count; i++)
         {
             for (int j = 0; j < slotMatrix[i].slotImages.Count; j++)
@@ -123,7 +128,7 @@ public class ArthurFreeSpinController : MonoBehaviour
     internal IEnumerator RearrangeMatrix()
     {
 
-
+        //check for id less than 4 and replace this with -1. these icons to be cut
         for (int j = slotMatrix[0].slotImages.Count - 1; j >= 0; j--)
         {
             for (int i = 0; i < slotMatrix.Count; i++)
@@ -140,6 +145,7 @@ public class ArthurFreeSpinController : MonoBehaviour
 
         for (int i = 0; i < slotMatrix.Count; i++)
         {
+            //sepreate the -1 and other values
             var negativeOnes = slotMatrix[i].slotImages.Where(x => x.id == -1).ToList();
 
             var otherValues = slotMatrix[i].slotImages.Where(x => x.id != -1).ToList();
@@ -147,15 +153,17 @@ public class ArthurFreeSpinController : MonoBehaviour
             if (negativeOnes.Count == 0)
                 continue;
 
+            //append the othervalues to the end of the negative ones
             foreach (var item in otherValues)
             {
                 negativeOnes.Add(item);
             }
 
+            //update the slot images with the new values
             slotMatrix[i].slotImages.Clear();
             slotMatrix[i].slotImages.AddRange(negativeOnes);
 
-
+            //move the images to the new position replace the icons with -1 with new random values
             for (int j = 0; j < slotMatrix[i].slotImages.Count; j++)
             {
                 if (slotMatrix[i].slotImages[j].id == -1)
@@ -186,6 +194,7 @@ public class ArthurFreeSpinController : MonoBehaviour
             }
             finalResult.Add(temp);
         }
+        // populate the original matrix with the new values
         populateOriginalMatrix?.Invoke(finalResult, null);
         yield return new WaitForSeconds(minClearDuration + 0.5f);
         psudoReel.SetActive(false);
