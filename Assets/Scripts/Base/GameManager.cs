@@ -263,7 +263,7 @@ public class GameManager : MonoBehaviour
             uIManager.UpdatePlayerInfo(SocketModel.playerData);
             uIManager.PopulateSymbolsPayout(SocketModel.uIData, SocketModel.initGameData.Bets[betCounter]);
             uIManager.PopulateBets(SocketModel.initGameData.Bets, totalLies, OnBetChange);
-            Application.ExternalCall("window.parent.postMessage", "OnEnter", "*");
+           // Application.ExternalCall("window.parent.postMessage", "OnEnter", "*");
         }
         else
         {
