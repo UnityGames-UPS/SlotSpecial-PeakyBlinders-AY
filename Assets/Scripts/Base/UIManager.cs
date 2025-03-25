@@ -9,7 +9,7 @@ using System;
 using System.Text;
 public class UIManager : MonoBehaviour
 {
-
+    [SerializeField] private SocketController socketManager;
     [Header("AutoSpin Popup")]
     [SerializeField] private Button AutoSpinButton;
     [SerializeField] private Button AutoSpinPopUpClose;
@@ -152,7 +152,7 @@ public class UIManager : MonoBehaviour
         SetButton(MusicToggle_button, ToggleMusic);
         SetButton(SoundToggle_button, ToggleSound);
 
-        SetButton(CloseDisconnect_Button, CallOnExitFunction);
+        SetButton(CloseDisconnect_Button,()=> { CallOnExitFunction(); socketManager.closeSocketReactnativeCall(); });
         SetButton(Close_Button, ClosePopup);
         SetButton(QuitSplash_button, () => OpenPopup(QuitPopupObject));
         SetButton(AutoSpinButton, () => OpenPopup(autoSpinPopupObject));
