@@ -11,6 +11,8 @@ public class ArthurFreeSpinController : MonoBehaviour
     [SerializeField] float iconHeight = 225;
     [SerializeField] float minClearDuration = 0.2f;
     [SerializeField] GameObject psudoReel;
+
+    [SerializeField] List<Sprite> SpriteList;
     [SerializeField] Sprite[] ID_0;
     [SerializeField] Sprite[] ID_1;
     [SerializeField] Sprite[] ID_2;
@@ -36,7 +38,7 @@ public class ArthurFreeSpinController : MonoBehaviour
     internal IEnumerator StartFP(GameObject originalReel, int count, bool initiate = true)
     {
         FreeSpinPopUPOverlay?.Invoke();
-        yield return new WaitWhile(()=>UIManager.freeSpinOverLayOpen);
+        yield return new WaitWhile(() => UIManager.freeSpinOverLayOpen);
 
         FreeSpinPopUP?.Invoke(count, arthurSpinBg);
         yield return new WaitForSeconds(1.8f);
@@ -99,6 +101,9 @@ public class ArthurFreeSpinController : MonoBehaviour
         {
             for (int j = 0; j < slotMatrix[i].slotImages.Count; j++)
             {
+                    int randomIndex = UnityEngine.Random.Range(0, 9);
+                    slotMatrix[i].slotImages[j].iconImage.sprite = iconref[randomIndex];
+                    slotMatrix[i].slotImages[j].id = randomIndex;
                 PopulateAnimation(slotMatrix[i].slotImages[j].activeanimation, slotMatrix[i].slotImages[j].id);
             }
         }
@@ -163,7 +168,6 @@ public class ArthurFreeSpinController : MonoBehaviour
                     slotMatrix[i].slotImages[j].id = randomIndex;
                 }
                 slotMatrix[i].slotImages[j].transform.DOLocalMoveY((2 - j) * iconHeight + iconHeight / 2, minClearDuration).SetEase(Ease.InOutQuad);
-                Debug.Log("pos" + ((2 - j) * iconHeight - iconHeight));
             }
 
         }
@@ -198,6 +202,7 @@ public class ArthurFreeSpinController : MonoBehaviour
             {
                 if (slotMatrix[i].slotImages[j].id < 4)
                 {
+                    slotMatrix[i].slotImages[j].activeanimation.StopAnimation();
                     slotMatrix[i].slotImages[j].activeanimation.StartAnimation();
 
                 }
@@ -213,8 +218,19 @@ public class ArthurFreeSpinController : MonoBehaviour
     }
     void PopulateAnimation(ImageAnimation imageAnimation, int id)
     {
+        for (int i = 0; i < slotMatrix.Count; i++)
+        {
+            for (int j = 0; j < slotMatrix[i].slotImages.Count; j++)
+            {
+                if (slotMatrix[i].slotImages[j].id == -1)
+                {
+                    int randomIndex = UnityEngine.Random.Range(4, 8);
+                    slotMatrix[i].slotImages[j].iconImage.sprite = iconref[randomIndex];
+                    slotMatrix[i].slotImages[j].id = randomIndex;
+                }
+            }
 
-
+        }
         imageAnimation.textureArray.Clear();
         switch (id)
         {

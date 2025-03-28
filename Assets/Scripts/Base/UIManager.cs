@@ -9,7 +9,7 @@ using System;
 using System.Text;
 public class UIManager : MonoBehaviour
 {
-
+    [SerializeField] private SocketController socketManager;
     [Header("AutoSpin Popup")]
     [SerializeField] private Button AutoSpinButton;
     [SerializeField] private Button AutoSpinPopUpClose;
@@ -123,7 +123,7 @@ public class UIManager : MonoBehaviour
 
     Tweener normalWinTween;
 
-
+    Tween textTween;
     private void Awake()
     {
         //if (spalsh_screen) spalsh_screen.SetActive(true);
@@ -152,7 +152,7 @@ public class UIManager : MonoBehaviour
         SetButton(MusicToggle_button, ToggleMusic);
         SetButton(SoundToggle_button, ToggleSound);
 
-        SetButton(CloseDisconnect_Button, CallOnExitFunction);
+        SetButton(CloseDisconnect_Button,()=> { CallOnExitFunction(); socketManager.closeSocketReactnativeCall(); });
         SetButton(Close_Button, ClosePopup);
         SetButton(QuitSplash_button, () => OpenPopup(QuitPopupObject));
         SetButton(AutoSpinButton, () => OpenPopup(autoSpinPopupObject));
@@ -200,6 +200,8 @@ public class UIManager : MonoBehaviour
 
     internal void UpdatePlayerInfo(PlayerData playerData)
     {
+
+        textTween?.Kill();
         playerCurrentWinning.text = playerData.currentWining.ToString("f3");
         playerBalance.text = playerData.Balance.ToString("f3");
 
@@ -237,6 +239,8 @@ public class UIManager : MonoBehaviour
     internal void ToggleFreeSpinPanel(bool toggle)
     {
         freeSpinPanel.SetActive(toggle);
+        if(!toggle)
+        UpdateFreeSpinInfo(0,0);
         gameButtonPanel.SetActive(!toggle);
 
     }
@@ -386,6 +390,7 @@ public class UIManager : MonoBehaviour
     internal void CloseFreeSpinPopup(GameObject Bg)
     {
         ClosePopup();
+        // UpdateFreeSpinInfo(0,0);
         FreeSpinCount.text = "0";
         if (Bg && Bg.activeSelf)
             Bg.SetActive(false);
@@ -418,13 +423,12 @@ public class UIManager : MonoBehaviour
     internal void DeductBalanceAnim(double finalAmount, double initAmount)
     {
 
-        DOTween.To(() => initAmount, (val) => initAmount = val, finalAmount, 0.8f).OnUpdate(() =>
+        textTween=DOTween.To(() => initAmount, (val) => initAmount = val, finalAmount, 0.8f).OnUpdate(() =>
         {
             playerBalance.text = initAmount.ToString("f3");
 
         }).OnComplete(() =>
         {
-
             playerBalance.text = finalAmount.ToString("f3");
         });
     }
@@ -438,7 +442,7 @@ public class UIManager : MonoBehaviour
 
         }).OnComplete(() =>
         {
-            Win_Text.text = amount.ToString();
+            Win_Text.text = amount.ToString("f3");
         });
 
         yield return new WaitForSeconds(3f);
@@ -475,7 +479,7 @@ public class UIManager : MonoBehaviour
         if (freespinCount >= 0)
             freeSpinInfo.text = freespinCount.ToString();
         if (winnings >= 0)
-            freeSpinWinnings.text = winnings.ToString();
+            freeSpinWinnings.text = winnings.ToString("f3");
     }
     internal void UpdateThunderSpinInfo(int freespinCount = -1)
     {

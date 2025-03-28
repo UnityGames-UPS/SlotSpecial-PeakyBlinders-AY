@@ -202,6 +202,8 @@ public class SlotController : MonoBehaviour
                 tempIcon.StartAnim(ID_11, tempIcon.id);
             else if (tempIcon.id == 12)
                 tempIcon.StartAnim(ID_12, tempIcon.id);
+            else if(tempIcon.id>=13)
+                tempIcon.StartAnim(ID_13_, tempIcon.id);
             else
                 tempIcon.StartAnim(ID_0_8, tempIcon.id);
 
@@ -225,8 +227,8 @@ public class SlotController : MonoBehaviour
                 tempIcon.StartAnim(ID_11, tempIcon.id);
             else if (tempIcon.id == 12)
                 tempIcon.StartAnim(ID_12, tempIcon.id);
-            else if(tempIcon.id>13)
-                tempIcon.StartAnim(ID_0_8, tempIcon.id);
+            else if(tempIcon.id>=13)
+                tempIcon.StartAnim(ID_13_, tempIcon.id);
             else
                 tempIcon.StartAnim(ID_0_8, tempIcon.id);
 

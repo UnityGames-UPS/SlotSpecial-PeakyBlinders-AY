@@ -30,19 +30,19 @@ public class SlotIconView : MonoBehaviour
         iconImage.sprite = image;
 
         if(id!=13){
-        text.text = "0";
-        text.gameObject.SetActive(false);
+            text.text = "0";
+            text.gameObject.SetActive(false);
         }
         this.id = id;
         this.pos = pos;
 
         if (id == 9 || id==10 || id==11 || id==12)
         {
-            activeanimation.rendererDelegate = iconImage;
+            this.activeanimation.rendererDelegate = this.iconImage;
         }
         else
         {
-            activeanimation.rendererDelegate = iconBorderImage;
+            this.activeanimation.rendererDelegate = this.iconBorderImage;
         }
         iconBorderImage.gameObject.SetActive(false);
     }

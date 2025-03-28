@@ -128,7 +128,7 @@ public class ThunderFreeSpinController : MonoBehaviour
         horizontalbar.SetActive(false);
 
         currentTotalWinning = 0;
-        totalWinning_value.text = currentTotalWinning.ToString();
+        totalWinning_value.text = currentTotalWinning.ToString("f3");
         GameManager.thunderFreeSpins=false;
 
         yield return null;
