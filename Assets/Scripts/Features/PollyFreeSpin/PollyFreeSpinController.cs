@@ -7,6 +7,7 @@ using System;
 
 public class PollyFreeSpinController : MonoBehaviour
 {
+    [SerializeField] private SocketController socketController;
     [SerializeField] RectTransform border;
     [SerializeField] float origin;
     [SerializeField] ImageAnimation[] slotAnim;
@@ -33,8 +34,9 @@ public class PollyFreeSpinController : MonoBehaviour
 
     internal IEnumerator StartFP(int count)
     {
+        Debug.Log("Dev Test :**********polly");
         FreeSpinPopUPOverlay?.Invoke();
-        yield return new WaitWhile(()=>!UIManager.freeSpinOverLayOpen);
+        yield return new WaitWhile(() => !UIManager.freeSpinOverLayOpen);
 
         FreeSpinPopUP?.Invoke(count, pollySpinBg);
         yield return new WaitForSeconds(1.8f);
@@ -48,13 +50,13 @@ public class PollyFreeSpinController : MonoBehaviour
             count--;
             UpdateUI?.Invoke(count, -1);
             yield return spin = StartCoroutine(SpinRoutine(SetBorder, ReSetBorder, false, false, 0, 0f));
-            UpdateUI?.Invoke(-1, SocketModel.playerData.currentWining);
-            if (SocketModel.resultGameData.freeSpinAdded)
+            UpdateUI?.Invoke(-1, socketController.resultGameData.payload.currentWinning);
+            if (socketController.resultGameData.features.freeSpin.freeSpinAdded)
             {
                 if (spin != null)
                     StopCoroutine(spin);
                 int prevFreeSpin = count;
-                count = SocketModel.resultGameData.freeSpinCount;
+                count = socketController.resultGameData.features.freeSpin.freeSpinCount;
                 int freeSpinAdded = count - prevFreeSpin;
                 UpdateUI?.Invoke(count, -1);
                 FreeSpinPopUP?.Invoke(freeSpinAdded, null);
@@ -64,24 +66,24 @@ public class PollyFreeSpinController : MonoBehaviour
 
             }
 
-            if (SocketModel.resultGameData.thunderSpinCount > 0)
+            if (socketController.resultGameData.features.bonus.thunderSpinCount > 0)
             {
                 if (spin != null)
                     StopCoroutine(spin);
                 border.parent.gameObject.SetActive(false);
                 yield return thunderFP.StartFP(
-                froxenIndeces: SocketModel.resultGameData.frozenIndices,
-                count: SocketModel.resultGameData.thunderSpinCount,
-                ResultReel: SocketModel.resultGameData.ResultReel
+                froxenIndeces: socketController.resultGameData.features.bonus.frozenIndices,
+                count: socketController.resultGameData.features.bonus.thunderSpinCount,
+                ResultReel: Helper.ConvertStringMatrixToIntMatrix(socketController.resultGameData.matrix)
                 );
                 border.parent.gameObject.SetActive(true);
 
             }
 
-            if(SocketModel.playerData.currentWining>0)
-            yield return new WaitForSeconds(3f);
+            if (socketController.resultGameData.payload.currentWinning > 0)
+                yield return new WaitForSeconds(3f);
             else
-            yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(1f);
 
         }
         border.parent.gameObject.SetActive(false);
@@ -124,7 +126,7 @@ public class PollyFreeSpinController : MonoBehaviour
     {
         int index = -1;
 
-        List<string> convertedmatrix = Helper.Convert2dToLinearMatrix(SocketModel.resultGameData.ResultReel);
+        List<string> convertedmatrix = Helper.Convert2dToLinearMatrix(Helper.ConvertStringMatrixToIntMatrix(socketController.resultGameData.matrix));
 
         for (int i = 0; i < convertedmatrix.Count; i++)
         {
@@ -143,4 +145,6 @@ public class PollyFreeSpinController : MonoBehaviour
 
 
     }
+
+
 }

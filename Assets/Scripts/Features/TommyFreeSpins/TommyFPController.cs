@@ -7,6 +7,7 @@ using System;
 using Newtonsoft.Json;
 public class TommyFPController : MonoBehaviour
 {
+    [SerializeField] private SocketController socketController;
     [SerializeField] Transform colossalSlot;
     [SerializeField] ImageAnimation colossalIcon;
 
@@ -43,12 +44,12 @@ public class TommyFPController : MonoBehaviour
     [SerializeField] private List<Sprite> ID_9;
     [SerializeField] private List<Sprite> ID_10;
     int colIndex = -1;
-        int id = -1;
+    int id = -1;
 
     internal IEnumerator StartFP(int count)
     {
         FreeSpinPopUPOverlay?.Invoke();
-        yield return new WaitWhile(()=>!UIManager.freeSpinOverLayOpen);
+        yield return new WaitWhile(() => !UIManager.freeSpinOverLayOpen);
         FreeSpinPopUP?.Invoke(count, tommySpinBg);
         yield return new WaitForSeconds(1.8f);
         FreeSpinPopUpClose?.Invoke(tommySpinBg);
@@ -60,15 +61,15 @@ public class TommyFPController : MonoBehaviour
             count--;
             UpdateUI?.Invoke(count, -1);
             yield return spin = StartCoroutine(SpinRoutine(StartColossalSpin, StopTweening, false, false, 0.5f, 0.5f));
-            UpdateUI?.Invoke(-1, SocketModel.playerData.currentWining);
-            colIndex=-1;
-            id=-1;
-            if (SocketModel.resultGameData.freeSpinAdded)
+            UpdateUI?.Invoke(-1, socketController.resultGameData.payload.currentWinning);
+            colIndex = -1;
+            id = -1;
+            if (socketController.resultGameData.features.freeSpin.freeSpinAdded)
             {
                 if (spin != null)
                     StopCoroutine(spin);
                 int prevFreeSpin = count;
-                count = SocketModel.resultGameData.freeSpinCount;
+                count = socketController.resultGameData.features.freeSpin.freeSpinCount;
                 int freeSpinAdded = count - prevFreeSpin;
                 UpdateUI?.Invoke(count, -1);
                 FreeSpinPopUP?.Invoke(freeSpinAdded, null);
@@ -77,20 +78,20 @@ public class TommyFPController : MonoBehaviour
 
             }
 
-            if (SocketModel.resultGameData.thunderSpinCount > 0)
+            if (socketController.resultGameData.features.bonus.thunderSpinCount > 0)
             {
                 if (spin != null)
                     StopCoroutine(spin);
                 colossalSlot.parent.gameObject.SetActive(false);
                 yield return thunderFP.StartFP(
-                froxenIndeces: SocketModel.resultGameData.frozenIndices,
-                count: SocketModel.resultGameData.thunderSpinCount,
-                ResultReel: SocketModel.resultGameData.ResultReel
+                froxenIndeces: socketController.resultGameData.features.bonus.frozenIndices,
+                count: socketController.resultGameData.features.bonus.thunderSpinCount,
+                ResultReel: Helper.ConvertStringMatrixToIntMatrix(socketController.resultGameData.matrix)
                 );
                 colossalSlot.parent.gameObject.SetActive(true);
 
             }
-            if (SocketModel.playerData.currentWining > 0)
+            if (socketController.resultGameData.payload.currentWinning > 0)
                 yield return new WaitForSeconds(2.5f);
             else
                 yield return new WaitForSeconds(1f);
@@ -103,10 +104,10 @@ public class TommyFPController : MonoBehaviour
     }
     private void StartColossalSpin()
     {
-        colIndex = FindColIndex(SocketModel.resultGameData.ResultReel);
-        if (colIndex < 0 || id<0)
+        colIndex = FindColIndex(Helper.ConvertStringMatrixToIntMatrix(socketController.resultGameData.matrix));
+        if (colIndex < 0 || id < 0)
             return;
-            colossalIcon.StopAnimation();
+        colossalIcon.StopAnimation();
 
 
         colossalSlot.transform.localPosition = new Vector3(-270 + colIndex * 270, colossalSlot.transform.localPosition.y);
@@ -124,9 +125,9 @@ public class TommyFPController : MonoBehaviour
 
     private void StopTweening()
     {
-        if (colIndex < 0 || id<0)
+        if (colIndex < 0 || id < 0)
             return;
-            PopulateSpriteNAnim(id);
+        PopulateSpriteNAnim(id);
         alltweens?.Pause();
         colossalSlot.localPosition = new Vector2(colossalSlot.localPosition.x, initialPos + 680);
         alltweens = colossalSlot.DOLocalMoveY(initialPos, 0.2f).OnComplete(() =>
@@ -156,8 +157,8 @@ public class TommyFPController : MonoBehaviour
     private int FindColIndex(List<List<int>> resultReel)
     {
         List<string> convertedmatrix = Helper.Convert2dToLinearMatrix(resultReel);
-        int index=-1;
-        id=-1;
+        int index = -1;
+        id = -1;
         for (int i = 0; i < convertedmatrix.Count; i++)
         {
             if (i + 2 < convertedmatrix.Count)
@@ -166,7 +167,7 @@ public class TommyFPController : MonoBehaviour
                 if (convertedmatrix[i] == convertedmatrix[i + 1] && convertedmatrix[i + 1] == convertedmatrix[i + 2])
                 {
                     index = i;
-                    id = SocketModel.resultGameData.ResultReel[0][i];
+                    id = Helper.ConvertStringMatrixToIntMatrix(socketController.resultGameData.matrix)[0][i];
                     break;
                 }
 

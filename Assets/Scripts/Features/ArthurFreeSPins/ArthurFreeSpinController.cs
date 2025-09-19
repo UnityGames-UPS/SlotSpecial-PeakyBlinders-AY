@@ -7,6 +7,7 @@ using DG.Tweening;
 using Newtonsoft.Json;
 public class ArthurFreeSpinController : MonoBehaviour
 {
+    [SerializeField] private SocketController socketController;
     [SerializeField] internal List<SlotImage> slotMatrix = new List<SlotImage>();
     [SerializeField] float iconHeight = 225;
     [SerializeField] float minClearDuration = 0.2f;
@@ -21,7 +22,7 @@ public class ArthurFreeSpinController : MonoBehaviour
     [SerializeField] Transform blade;
 
     [SerializeField] internal List<Sprite> iconref;
-    internal Action<List<List<int>>, List<List<double>>> populateOriginalMatrix;
+    internal Action<List<List<int>>, List<FrozenIndex>> populateOriginalMatrix;
 
     internal Func<Action, Action, bool, bool, float, float, IEnumerator> SpinRoutine;
 
@@ -37,6 +38,7 @@ public class ArthurFreeSpinController : MonoBehaviour
 
     internal IEnumerator StartFP(GameObject originalReel, int count, bool initiate = true)
     {
+        Debug.Log("Dev Test :**********arther");
         FreeSpinPopUPOverlay?.Invoke();
         yield return new WaitWhile(() => UIManager.freeSpinOverLayOpen);
 
@@ -53,13 +55,13 @@ public class ArthurFreeSpinController : MonoBehaviour
             count--;
             UpdateUI?.Invoke(count, -1);
             yield return spin = StartCoroutine(SpinRoutine(null, null, false, false, 0, 0));
-            UpdateUI?.Invoke(-1, SocketModel.playerData.currentWining);
-            if (SocketModel.resultGameData.freeSpinAdded)
+            UpdateUI?.Invoke(-1, socketController.resultGameData.payload.currentWinning);
+            if (socketController.resultGameData.features.freeSpin.isFreeSpin)     ////ashu added
             {
                 if (spin != null)
                     StopCoroutine(spin);
                 int prevFreeSpin = count;
-                count = SocketModel.resultGameData.freeSpinCount;
+                count = socketController.resultGameData.features.freeSpin.freeSpinCount;
                 int freeSpinAdded = count - prevFreeSpin;
 
                 UpdateUI?.Invoke(count, -1);
@@ -70,19 +72,19 @@ public class ArthurFreeSpinController : MonoBehaviour
 
             }
 
-            if (SocketModel.resultGameData.thunderSpinCount > 0)
+            if (socketController.resultGameData.features.bonus.thunderSpinCount > 0)
             {
                 if (spin != null)
                     StopCoroutine(spin);
 
                 yield return thunderFP.StartFP(
-                froxenIndeces: SocketModel.resultGameData.frozenIndices,
-                count: SocketModel.resultGameData.thunderSpinCount,
-                ResultReel: SocketModel.resultGameData.ResultReel);
+                froxenIndeces: socketController.resultGameData.features.bonus.frozenIndices,
+                count: socketController.resultGameData.features.bonus.thunderSpinCount,
+                ResultReel: Helper.ConvertStringMatrixToIntMatrix(socketController.resultGameData.matrix));
 
             }
 
-            if (SocketModel.playerData.currentWining > 0)
+            if (socketController.resultGameData.payload.currentWinning > 0)
                 yield return new WaitForSeconds(3f);
             else
                 yield return new WaitForSeconds(1f);
@@ -101,9 +103,9 @@ public class ArthurFreeSpinController : MonoBehaviour
         {
             for (int j = 0; j < slotMatrix[i].slotImages.Count; j++)
             {
-                    int randomIndex = UnityEngine.Random.Range(0, 9);
-                    slotMatrix[i].slotImages[j].iconImage.sprite = iconref[randomIndex];
-                    slotMatrix[i].slotImages[j].id = randomIndex;
+                int randomIndex = UnityEngine.Random.Range(0, 9);
+                slotMatrix[i].slotImages[j].iconImage.sprite = iconref[randomIndex];
+                slotMatrix[i].slotImages[j].id = randomIndex;
                 PopulateAnimation(slotMatrix[i].slotImages[j].activeanimation, slotMatrix[i].slotImages[j].id);
             }
         }

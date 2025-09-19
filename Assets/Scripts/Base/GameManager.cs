@@ -87,7 +87,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         SetButton(SlotStart_Button, ExecuteSpin, true);
-        SetButton(CancelWinAnim, () => StopWinAnimImmediate());
+        SetButton(CancelWinAnim, () => StopWinAnimImmediate());                                  // ashu
         SetButton(TurboButton, () => ToggleTurboMode());
         SetButton(autoSpinUp, () => OnAutoSpinChange(true));
         SetButton(autoSpinDown, () => OnAutoSpinChange(false));
@@ -139,7 +139,7 @@ public class GameManager : MonoBehaviour
         //     }
         // }
 
-        socketController.OpenSocket();
+        // socketController.OpenSocket();
 
 
         // tommyFP.spriteRef.AddRange(slotManager.iconImages);
@@ -156,8 +156,8 @@ public class GameManager : MonoBehaviour
         thunderFP.FreeSpinPopUpClose = uIManager.CloseFreeSpinPopup;
         thunderFP.imageRef.AddRange(slotManager.iconImages);
         thunderFP.FreeSpinPopUPOverlay = uIManager.OpenFreeSpinPopupOverlay;
-        thunderFP.StopAllWinAnimation = StopAllWinAnimation;
-        thunderFP.thunderWinPopup = ThunderWinPopups;
+        thunderFP.StopAllWinAnimation = StopAllWinAnimation;                                  // ashu
+        thunderFP.thunderWinPopup = ThunderWinPopups;                                  // ashu
         thunderFP.PlayStopSpinAudio = audioController.PlaySpinStopAudio;
 
         arthurFP.iconref.AddRange(slotManager.iconImages);
@@ -251,23 +251,23 @@ public class GameManager : MonoBehaviour
         {
             initiated = true;
             betCounter = 0;
-            totalLies = SocketModel.initGameData.lineData.Count;
-            currentTotalBet = SocketModel.initGameData.Bets[betCounter] * totalLies;
-            currentBalance = SocketModel.playerData.Balance;
+            totalLies = socketController.initGameData.lines.Count;
+            currentTotalBet = socketController.initGameData.bets[betCounter] * totalLies;
+            currentBalance = socketController.playerData.balance;
             if (currentBalance < currentTotalBet)
             {
                 uIManager.LowBalPopup();
             }
-            payLineController.paylines.AddRange(SocketModel.initGameData.lineData);
+            payLineController.paylines.AddRange(socketController.initGameData.lines);
             if (totalBet_text) totalBet_text.text = currentTotalBet.ToString();
-            uIManager.UpdatePlayerInfo(SocketModel.playerData);
-            uIManager.PopulateSymbolsPayout(SocketModel.uIData, SocketModel.initGameData.Bets[betCounter]);
-            uIManager.PopulateBets(SocketModel.initGameData.Bets, totalLies, OnBetChange);
-           // Application.ExternalCall("window.parent.postMessage", "OnEnter", "*");
+            uIManager.UpdatePlayerInfo(socketController.playerData);                                    //ashu
+            uIManager.PopulateSymbolsPayout(socketController.uIData, socketController.initGameData.bets[betCounter]);
+            uIManager.PopulateBets(socketController.initGameData.bets, totalLies, OnBetChange);
+            // Application.ExternalCall("window.parent.postMessage", "OnEnter", "*");
         }
         else
         {
-            uIManager.PopulateSymbolsPayout(SocketModel.uIData, totalLies);
+            uIManager.PopulateSymbolsPayout(socketController.uIData, totalLies);
         }
 
 
@@ -315,17 +315,17 @@ public class GameManager : MonoBehaviour
             slotManager.RespectMask(i);
         }
 
-        yield return CheckNStartFP(
-            arthur: SocketModel.resultGameData.isArthurBonus,
-            tommy: SocketModel.resultGameData.isTomBonus,
-            polly: SocketModel.resultGameData.isPollyBonus,
-            thunder: SocketModel.resultGameData.isThunderSpin,
+        Debug.Log("Dev Freespin :" + socketController.resultGameData.features.isArthurSpin);
+        yield return CheckNStartFP(                                        //ashu
+            arthur: socketController.resultGameData.features.isArthurSpin,
+            tommy: socketController.resultGameData.features.isTomSpin,
+            polly: socketController.resultGameData.features.isPollySpin,
+            thunder: socketController.resultGameData.features.isThunderSpin,
             initiate: initiate
         );
-
         uIManager.ToggleFreeSpinPanel(false);
-        // yield return new WaitForSeconds(1f);
-        StopAllWinAnimation();
+
+        StopAllWinAnimation();                                  // ashu
         audioController.playBgAudio();
         ToggleButtonGrp(true);
         isSpinning = false;
@@ -347,7 +347,7 @@ public class GameManager : MonoBehaviour
 
             yield return SpinRoutine();
 
-            if (SocketModel.playerData.currentWining > 0)
+            if (socketController.resultGameData.payload.currentWinning > 0)                           //Ashu
             {
                 if (TurboButton)
                     yield return new WaitForSeconds(2.5f);
@@ -362,7 +362,7 @@ public class GameManager : MonoBehaviour
 
         }
 
-        StopAllWinAnimation();
+        StopAllWinAnimation();                                  // ashu
         autoSpinText.transform.parent.gameObject.SetActive(false);
         autoSpinText.text = "0";
         isSpinning = false;
@@ -429,13 +429,14 @@ public class GameManager : MonoBehaviour
 
 
         if (!isFreeSpin)
-            uIManager.DeductBalanceAnim(SocketModel.playerData.Balance - currentTotalBet, SocketModel.playerData.Balance);
+            uIManager.DeductBalanceAnim(socketController.playerData.balance - currentTotalBet, socketController.playerData.balance);
 
         yield return OnSpin(OnSpinAnimStart, OnSpinAnimStop, playBeforeStart, playBeforeEnd, delay, delay1);
-        yield return OnSpinEnd();
+        yield return OnSpinEnd();                                  // ashu
 
-        if (SocketModel.resultGameData.freeSpinCount > 0 && !isFreeSpin)
+        if (socketController.resultGameData.features.freeSpin.freeSpinCount > 0 && !isFreeSpin)             //ashu
         {
+            Debug.Log("Dev Test : Enterd Freespin");
             if (autoSpinRoutine != null)
             {
                 yield return StopAutoSpinCoroutine(true);
@@ -443,7 +444,7 @@ public class GameManager : MonoBehaviour
                     autoSpinShouldContinue = true;
             }
             int prevFreeSpin = freeSpinCount;
-            freeSpinCount = SocketModel.resultGameData.freeSpinCount;
+            freeSpinCount = socketController.resultGameData.features.freeSpin.freeSpinCount;
             uIManager.UpdateFreeSpinInfo(freeSpinCount);
             // uIManager.FreeSpinPopup(freeSpinCount, true);
             if (turboMode)
@@ -458,10 +459,10 @@ public class GameManager : MonoBehaviour
 
             yield break;
         }
-        else if (SocketModel.resultGameData.thunderSpinCount > 0 && !thunderFreeSpins && !isFreeSpin)
+        else if (socketController.resultGameData.features.bonus.thunderSpinCount > 0 && !thunderFreeSpins && !isFreeSpin)
         {
             int prevFreeSpin = freeSpinCount;
-            freeSpinCount = SocketModel.resultGameData.thunderSpinCount;
+            freeSpinCount = socketController.resultGameData.features.bonus.thunderSpinCount;
             uIManager.UpdateFreeSpinInfo(freeSpinCount);
             if (autoSpinRoutine != null)
             {
@@ -503,7 +504,7 @@ public class GameManager : MonoBehaviour
         if (symbolAnim != null)
             StopCoroutine(symbolAnim);
 
-        StopAllWinAnimation();
+        StopAllWinAnimation();                                  // ashu
         if (currentBalance < currentTotalBet && !isFreeSpin)
         {
             uIManager.LowBalPopup();
@@ -527,13 +528,16 @@ public class GameManager : MonoBehaviour
         if (!isAutoSpin && !isFreeSpin)
             StopSpinButton.gameObject.SetActive(true);
         var spinData = new { data = new { currentBet = betCounter, currentLines = 20, spins = 1 }, id = "SPIN" };
-        socketController.SendData("message", spinData);
+        socketController.AccumulateResult(betCounter);
 
         yield return slotManager.StartSpin(turboMode, ImmediateStop);
         slotManager.shuffleInitialMatrix();
         slotManager.CLearAllCoins();
         yield return new WaitUntil(() => SocketController.isResultdone);
-        currentBalance = SocketModel.playerData.Balance;
+        currentBalance = socketController.playerData.balance;
+        //  Helper.ConvertPayload(socketController.resultGameData.payload,socketController.initGameData.lines);
+
+
         if (!playBeforeStart)
         {
             OnSpinStart?.Invoke();
@@ -547,8 +551,8 @@ public class GameManager : MonoBehaviour
         else
             yield return new WaitForSeconds(0.35f);
 
-        // slotManager.StopIconAnimation();
-        slotManager.PopulateSLotMatrix(SocketModel.resultGameData.ResultReel, SocketModel.resultGameData.frozenIndices);
+
+        slotManager.PopulateSLotMatrix(Helper.ConvertStringMatrixToIntMatrix(socketController.resultGameData.matrix), socketController.resultGameData.features.bonus.frozenIndices);           //ashu
 
         if (playBeforeEnd)
         {
@@ -575,27 +579,27 @@ public class GameManager : MonoBehaviour
 
 
     }
-    IEnumerator OnSpinEnd()
+    IEnumerator OnSpinEnd()                     //ashu
     {
         // audioController.StopSpinAudio();
         SingleLoopAnimation(true);
 
-        uIManager.UpdatePlayerInfo(SocketModel.playerData);
-        if (SocketModel.resultGameData.freeSpinIndices.Count > 0 || SocketModel.resultGameData.frozenIndices.Count > 0 || SocketModel.resultGameData.linesToEmit.Count > 0)
-            yield return new WaitForSeconds(1f);
+        uIManager.UpdatePlayerInfo(socketController.playerData, socketController.resultGameData.payload.currentWinning);
+        if (socketController.resultGameData.features.freeSpin.freeSpinCount > 0 || socketController.resultGameData.features.bonus.frozenIndices.Count > 0 || socketController.resultGameData.payload.lineWins.Count > 0) //ashu
+            yield return new WaitForSeconds(1f);                  //ashu
 
         audioController.StopWLAaudio();
 
-        if (SocketModel.playerData.currentWining > 0 && !thunderFreeSpins)
+        if (socketController.resultGameData.payload.currentWinning > 0 && !thunderFreeSpins)
         {
             winanimRunning = true;
-            CheckWinPopups(SocketModel.playerData.currentWining);
+            CheckWinPopups(socketController.resultGameData.payload.currentWinning);
             uIManager.NormalWinAnimation();
             yield return new WaitUntil(() => !winanimRunning);
 
         }
         if (isFreeSpin)
-            uIManager.UpdateFreeSpinInfo(winnings: SocketModel.playerData.currentWining);
+            uIManager.UpdateFreeSpinInfo(winnings: socketController.resultGameData.payload.currentWinning);
 
         slotManager.StopIconAnimation();
 
@@ -608,51 +612,86 @@ public class GameManager : MonoBehaviour
             yield break;
         }
 
-        if (SocketModel.resultGameData.linesToEmit.Count == 1)
+        if (socketController.resultGameData.payload.lineWins.Count == 1)
         {
             SingleLoopAnimation();
             yield break;
         }
 
-        if (SocketModel.resultGameData.linesToEmit.Count > 1)
+        if (socketController.resultGameData.payload.lineWins.Count > 1)
         {
             symbolAnim = StartCoroutine(PayLineSymbolRoutine(false));
         }
         yield return null;
     }
 
+
     private void SingleLoopAnimation(bool showall = false)
     {
-        if (SocketModel.resultGameData.symbolsToEmit.Count > 0)
+
+        if (socketController.resultGameData.payload.lineWins.Count > 0)              //ashu
         {
             paylineSymbolAnimPanel.gameObject.SetActive(true);
-            slotManager.StartIconAnimation(Helper.RemoveDuplicates(SocketModel.resultGameData.symbolsToEmit), paylineSymbolAnimPanel);
+
+            slotManager.StartIconAnimation(Helper.GetAllSymbolToEmit(socketController.resultGameData.payload, socketController.initGameData.lines), paylineSymbolAnimPanel);
         }
 
 
-        if (SocketModel.resultGameData.linesToEmit.Count > 0)
+        if (socketController.resultGameData.payload.lineWins.Count > 0)
         {
-            for (int i = 0; i < SocketModel.resultGameData.linesToEmit.Count; i++)
+            for (int i = 0; i < socketController.resultGameData.payload.lineWins.Count; i++)
             {
-                payLineController.GeneratePayline(SocketModel.resultGameData.linesToEmit[i]);
+                payLineController.GeneratePayline(socketController.resultGameData.payload.lineWins[i].lineIndex);
             }
         }
 
         if (!showall)
             return;
 
-        if (SocketModel.resultGameData.frozenIndices.Count > 0 && !isFreeSpin && !thunderFreeSpins)
+        if (socketController.resultGameData.features.bonus.frozenIndices.Count > 0 && !isFreeSpin && !thunderFreeSpins)
         {
             paylineSymbolAnimPanel.gameObject.SetActive(true);
-            slotManager.StartIconAnimation(Helper.ConvertFrozenIndicesToCoord(SocketModel.resultGameData.frozenIndices), paylineSymbolAnimPanel);
+            slotManager.StartIconAnimation(Helper.GetAllFrozenIndexex(socketController.resultGameData.features.bonus.frozenIndices), paylineSymbolAnimPanel);
         }
 
-        if (SocketModel.resultGameData.freeSpinIndices.Count > 0)
-        {
-            paylineSymbolAnimPanel.gameObject.SetActive(true);
-            slotManager.StartIconAnimation(SocketModel.resultGameData.freeSpinIndices, paylineSymbolAnimPanel);
-        }
+        // if (socketController.resultGameData.freeSpinIndices.Count > 0)            // ashu
+        // {
+        //     paylineSymbolAnimPanel.gameObject.SetActive(true);
+        //     slotManager.StartIconAnimation(socketController.resultGameData.freeSpinIndices, paylineSymbolAnimPanel);
+        // }
     }
+    // private void SingleLoopAnimation(bool showall = false)
+    // {
+    //     if (socketController.resultGameData.symbolsToEmit.Count > 0)              //ashu.    repaces func by new
+    //     {
+    //         paylineSymbolAnimPanel.gameObject.SetActive(true);
+    //         slotManager.StartIconAnimation(Helper.RemoveDuplicates(socketController.resultGameData.symbolsToEmit), paylineSymbolAnimPanel);
+    //     }
+
+
+    //     if (socketController.resultGameData.linesToEmit.Count > 0)
+    //     {
+    //         for (int i = 0; i < socketController.resultGameData.linesToEmit.Count; i++)
+    //         {
+    //             payLineController.GeneratePayline(socketController.resultGameData.linesToEmit[i]);
+    //         }
+    //     }
+
+    //     if (!showall)
+    //         return;
+
+    //     if (socketController.resultGameData.frozenIndices.Count > 0 && !isFreeSpin && !thunderFreeSpins)
+    //     {
+    //         paylineSymbolAnimPanel.gameObject.SetActive(true);
+    //         slotManager.StartIconAnimation(Helper.ConvertFrozenIndicesToCoord(socketController.resultGameData.frozenIndices), paylineSymbolAnimPanel);
+    //     }
+
+    //     if (socketController.resultGameData.freeSpinIndices.Count > 0)
+    //     {
+    //         paylineSymbolAnimPanel.gameObject.SetActive(true);
+    //         slotManager.StartIconAnimation(socketController.resultGameData.freeSpinIndices, paylineSymbolAnimPanel);
+    //     }
+    // }
 
     void ToggleButtonGrp(bool toggle)
     {
@@ -670,7 +709,7 @@ public class GameManager : MonoBehaviour
 
         Debug.Log(index);
         betCounter = index;
-        currentTotalBet = SocketModel.initGameData.Bets[betCounter] * totalLies;
+        currentTotalBet = socketController.initGameData.bets[betCounter] * totalLies;
         if (totalBet_text) totalBet_text.text = currentTotalBet.ToString();
         // if (currentBalance < currentTotalBet)
         //     uIManager.LowBalPopup();
@@ -679,7 +718,7 @@ public class GameManager : MonoBehaviour
 
 
 
-    void CheckWinPopups(double amount)
+    void CheckWinPopups(double amount)              //ashu
     {
         if (winAnim != null)
             StopCoroutine(winAnim);
@@ -689,7 +728,7 @@ public class GameManager : MonoBehaviour
         if (amount >= currentTotalBet * 10 && amount < currentTotalBet * 15)
         {
             uIManager.EnableWinPopUp(1);
-            winAnim = StartCoroutine(uIManager.WinTextAnim(SocketModel.playerData.currentWining));
+            winAnim = StartCoroutine(uIManager.WinTextAnim(socketController.resultGameData.payload.currentWinning));
             audioController.PlayWLAudio("big");
             Invoke(nameof(StopWinAnimImmediate), 3f);
 
@@ -697,7 +736,7 @@ public class GameManager : MonoBehaviour
         else if (amount >= currentTotalBet * 15 && amount < currentTotalBet * 20)
         {
             uIManager.EnableWinPopUp(2);
-            winAnim = StartCoroutine(uIManager.WinTextAnim(SocketModel.playerData.currentWining));
+            winAnim = StartCoroutine(uIManager.WinTextAnim(socketController.resultGameData.payload.currentWinning));
             audioController.PlayWLAudio("big");
             Invoke(nameof(StopWinAnimImmediate), 3f);
 
@@ -705,7 +744,7 @@ public class GameManager : MonoBehaviour
         else if (amount >= currentTotalBet * 20)
         {
             uIManager.EnableWinPopUp(3);
-            winAnim = StartCoroutine(uIManager.WinTextAnim(SocketModel.playerData.currentWining));
+            winAnim = StartCoroutine(uIManager.WinTextAnim(socketController.resultGameData.payload.currentWinning));
             audioController.PlayWLAudio("mega");
             Invoke(nameof(StopWinAnimImmediate), 3f);
 
@@ -726,7 +765,7 @@ public class GameManager : MonoBehaviour
         uIManager.ClosePopup();
         winAnim = null;
         uIManager.EnableWinPopUp(4);
-        winAnim = StartCoroutine(uIManager.WinTextAnim(SocketModel.playerData.currentWining));
+        winAnim = StartCoroutine(uIManager.WinTextAnim(socketController.resultGameData.payload.currentWinning));
         Invoke(nameof(StopWinAnimImmediate), 2.5f);
 
         if (amount >= currentTotalBet * 10 && amount < currentTotalBet * 15)
@@ -744,7 +783,7 @@ public class GameManager : MonoBehaviour
 
     IEnumerator PayLineSymbolRoutine(bool oneTime)
     {
-        if (SocketModel.resultGameData.symbolsToEmit.Count == 0)
+        if (socketController.resultGameData.payload.currentWinning == 0)
             yield break;
         paylineSymbolAnimPanel.gameObject.SetActive(true);
 
@@ -753,17 +792,17 @@ public class GameManager : MonoBehaviour
         slotManager.StopIconAnimation();
         while (loopDuration > 0)
         {
-            for (int i = 0; i < SocketModel.resultGameData.linesToEmit.Count; i++)
+            for (int i = 0; i < socketController.resultGameData.payload.lineWins.Count; i++)
             {
 
-                slotManager.PlaySymbolAnim(SocketModel.resultGameData.symbolsToEmit[i], paylineSymbolAnimPanel);
-                payLineController.GeneratePayline(SocketModel.resultGameData.linesToEmit[i]);
+                slotManager.PlaySymbolAnim(socketController.resultGameData.payload.lineWins[i].positions, socketController.resultGameData.payload.lineWins[i].lineIndex, paylineSymbolAnimPanel);   //ashu
+                payLineController.GeneratePayline(socketController.resultGameData.payload.lineWins[i].lineIndex);
                 if (turboMode)
                     yield return new WaitForSeconds(1);
                 else
                     yield return new WaitForSeconds(0.75f);
                 payLineController.ResetLines();
-                slotManager.StopSymbolAnim(SocketModel.resultGameData.symbolsToEmit[i]);
+                slotManager.StopSymbolAnim(socketController.resultGameData.payload.lineWins[i].positions, socketController.resultGameData.payload.lineWins[i].lineIndex);
 
             }
             if (oneTime)
@@ -807,22 +846,22 @@ public class GameManager : MonoBehaviour
         {
             yield return arthurFP.StartFP(
             originalReel: originalReel,
-            count: SocketModel.resultGameData.freeSpinCount,
+            count: socketController.resultGameData.features.freeSpin.freeSpinCount,
             initiate: initiate);
         }
         else if (!arthur && polly && !thunder && !tommy)
         {
             yield return pollyFP.StartFP(
-           count: SocketModel.resultGameData.freeSpinCount);
+           count: socketController.resultGameData.features.freeSpin.freeSpinCount);
         }
         else if (!arthur && !polly && thunder && !tommy)
         {
             thunderFreeSpins = true;
 
             yield return thunderFP.StartFP(
-                froxenIndeces: SocketModel.resultGameData.frozenIndices,
-                count: SocketModel.resultGameData.thunderSpinCount,
-                ResultReel: SocketModel.resultGameData.ResultReel
+                froxenIndeces: socketController.resultGameData.features.bonus.frozenIndices,
+                count: socketController.resultGameData.features.bonus.thunderSpinCount,
+                ResultReel: Helper.ConvertStringMatrixToIntMatrix(socketController.resultGameData.matrix)
             );
 
             thunderFreeSpins = false;
@@ -832,7 +871,7 @@ public class GameManager : MonoBehaviour
         else if (!arthur && !polly && !thunder && tommy)
         {
             yield return tommyFP.StartFP(
-            count: SocketModel.resultGameData.freeSpinCount);
+            count: socketController.resultGameData.features.freeSpin.freeSpinCount);
         }
 
         else

@@ -4,12 +4,11 @@ using System;
 
 public static class SocketModel
 {
-    public static PlayerData playerData= new PlayerData();
-    public static UIData uIData= new UIData();
+    // internal GameData InitialData = null;
+    // internal UiData UIData = null;
+    // internal Root ResultData = null;
+    // internal Player PlayerData = null;
 
-    public static InitGameData initGameData= new InitGameData();
-
-    public static ResultGameData resultGameData= new ResultGameData();
 
     public static int currentBetIndex = 0;
 
@@ -18,27 +17,28 @@ public static class SocketModel
 
 
 
+
 [Serializable]
 public class ResultGameData
 {
     public List<List<int>> ResultReel { get; set; }
-    public List<int> linesToEmit { get; set; }
     public bool isFreeSpin { get; set; }
     public int freeSpinCount { get; set; }
+    public List<int> linesToEmit { get; set; }
     public List<List<string>> symbolsToEmit { get; set; }
-    public bool isArthurBonus {get; set;}
-    public bool isTomBonus {get; set;}
-    public bool isPollyBonus {get; set;}
-    public bool isThunderSpin {get; set;}
-    public bool freeSpinAdded {get; set;}
-    
-    public List<List<int>> freeSpinIndices{get; set;}
-    public int thunderSpinCount {get; set;}
+    public bool isArthurBonus { get; set; }
+    public bool isTomBonus { get; set; }
+    public bool isPollyBonus { get; set; }
+    public bool isThunderSpin { get; set; }
+    public bool freeSpinAdded { get; set; }
 
-    public bool thunderSpinAdded {get; set;}
+    public List<List<int>> freeSpinIndices { get; set; }
+    public int thunderSpinCount { get; set; }
 
-    public bool isGrandPrize{get; set;}
-    public List<List<double>> frozenIndices {get; set;}
+    public bool thunderSpinAdded { get; set; }
+
+    public bool isGrandPrize { get; set; }
+    public List<List<double>> frozenIndices { get; set; }
 
 
 }
@@ -59,14 +59,15 @@ public class InitGameData
 public class UIData
 {
     public List<Symbol> symbols { get; set; }
-    public List<SpecialSymbol> specialBonusSymbolMulipliers {get; set;}
+    public List<SpecialSymbol> specialBonusSymbolMulipliers { get; set; }
 
 }
 
 [Serializable]
-public class SpecialSymbol{
-    public string name {get; set;}
-    public double value {get; set;}
+public class SpecialSymbol
+{
+    public string name { get; set; }
+    public double value { get; set; }
 }
 
 [Serializable]
@@ -85,12 +86,12 @@ public class AuthData
     //public double TotalLines;
 }
 
-[Serializable]
-public class MessageData
-{
-    public BetData data;
-    public string id;
-}
+// [Serializable]
+// public class MessageData
+// {
+//     public BetData data;
+//     public string id;
+// }
 
 [Serializable]
 public class InitData
@@ -108,18 +109,18 @@ public class AbtLogo
 
 
 
-[Serializable]
-public class Symbol
-{
-    public int ID { get; set; }
-    public string Name { get; set; }
-    public List<List<double>> Multiplier { get; set; }
-    public object defaultAmount { get; set; }
-    public object symbolsCount { get; set; }
-    public object increaseValue { get; set; }
-    public object description { get; set; }
-    public int freeSpin { get; set; }
-}
+// [Serializable]
+// public class Symbol
+// {
+//     public int ID { get; set; }
+//     public string Name { get; set; }
+//     public List<List<double>> Multiplier { get; set; }
+//     public object defaultAmount { get; set; }
+//     public object symbolsCount { get; set; }
+//     public object increaseValue { get; set; }
+//     public object description { get; set; }
+//     public int freeSpin { get; set; }
+// }
 
 
 

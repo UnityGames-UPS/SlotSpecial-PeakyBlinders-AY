@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 public class SlotController : MonoBehaviour
 {
-
+    [SerializeField] private SocketController socketController;
 
     [Header("Animation Sprites")]
     [SerializeField] internal Sprite[] iconImages;
@@ -64,20 +64,29 @@ public class SlotController : MonoBehaviour
         }
     }
 
-    internal void PopulateSLotMatrix(List<List<int>> resultData, List<List<double>> coins = null)
+    internal void PopulateSLotMatrix(List<List<int>> resultData, List<FrozenIndex> coins = null)
     {
-
-
-            if (coins != null)
+        if (coins != null)
+        {
+            for (int i = 0; i < coins.Count; i++)
             {
-                for (int i = 0; i < coins.Count; i++)
+                if (coins[i].coinsvalue == 13)
                 {
-                    if (coins[i][3] == 13)
-                        slotMatrix[(int)coins[i][0]].slotImages[(int)coins[i][1]].SetCoin(coins[i][2]);
+                    slotMatrix[coins[i].position[0]].slotImages[coins[i].position[1]].SetCoin(coins[i].coinsvalue);
                 }
             }
+        }
 
+        // if (coins != null)
+        // {
+        //     for (int i = 0; i < coins.Count; i++)
+        //     {
+        //         if (coins[i][3] == 13)
+        //             slotMatrix[(int)coins[i][0]].slotImages[(int)coins[i][1]].SetCoin(coins[i][2]);
+        //     }
+        // }
 
+        Debug.Log("Dev Test : populating the matrix");
         for (int i = 0; i < resultData.Count; i++)
         {
             for (int j = 0; j < resultData[i].Count; j++)
@@ -127,9 +136,9 @@ public class SlotController : MonoBehaviour
 
             if (!isFreeSpin && !GameManager.ImmediateStop && !turboMode)
             {
-                for (int j = 0; j < SocketModel.resultGameData.ResultReel.Count; j++)
+                for (int j = 0; j < socketController.resultGameData.matrix.Count; j++)
                 {
-                    if (SocketModel.resultGameData.ResultReel[j][i] >= 13)
+                    if (int.TryParse(socketController.resultGameData.matrix[j][i], out int value) && value >= 13)
                     {
 
                         if (i + 1 < border.Length)
@@ -191,6 +200,7 @@ public class SlotController : MonoBehaviour
         SlotIconView tempIcon;
         for (int j = 0; j < iconPos.Count; j++)
         {
+
             int[] pos = iconPos[j].Split(',').Select(int.Parse).ToArray();
             tempIcon = slotMatrix[pos[0]].slotImages[pos[1]];
 
@@ -202,7 +212,7 @@ public class SlotController : MonoBehaviour
                 tempIcon.StartAnim(ID_11, tempIcon.id);
             else if (tempIcon.id == 12)
                 tempIcon.StartAnim(ID_12, tempIcon.id);
-            else if(tempIcon.id>=13)
+            else if (tempIcon.id >= 13)
                 tempIcon.StartAnim(ID_13_, tempIcon.id);
             else
                 tempIcon.StartAnim(ID_0_8, tempIcon.id);
@@ -211,13 +221,14 @@ public class SlotController : MonoBehaviour
             tempIcon.SetParent(paylineSymbolAnimPanel);
         }
 
+
     }
     internal void StartIconAnimation(List<List<int>> iconPos, Transform paylineSymbolAnimPanel)
     {
         SlotIconView tempIcon;
         for (int j = 0; j < iconPos.Count; j++)
         {
-            tempIcon = slotMatrix[iconPos[j][0]].slotImages[iconPos[j][1]];
+            tempIcon = slotMatrix[iconPos[j][1]].slotImages[iconPos[j][0]];
 
             if (tempIcon.id == 9)
                 tempIcon.StartAnim(ID_9, tempIcon.id);
@@ -227,7 +238,7 @@ public class SlotController : MonoBehaviour
                 tempIcon.StartAnim(ID_11, tempIcon.id);
             else if (tempIcon.id == 12)
                 tempIcon.StartAnim(ID_12, tempIcon.id);
-            else if(tempIcon.id>=13)
+            else if (tempIcon.id >= 13)
                 tempIcon.StartAnim(ID_13_, tempIcon.id);
             else
                 tempIcon.StartAnim(ID_0_8, tempIcon.id);
@@ -265,6 +276,34 @@ public class SlotController : MonoBehaviour
         }
 
     }
+
+    internal void PlaySymbolAnim(List<int> iconPos, int lineIndex, Transform paylineSymbolAnimPanel)
+    {
+
+        for (int i = 0; i < iconPos.Count; i++)
+        {
+
+            slotMatrix[i].slotImages[socketController.initGameData.lines[lineIndex][iconPos[i]]].SetParent(paylineSymbolAnimPanel);
+
+            // if (!animatingIcons.Any(x => x.pos == slotMatrix[pos[0]].slotImages[pos[1]].pos))
+            //     animatingIcons.Add(slotMatrix[pos[0]].slotImages[pos[1]]);
+        }
+
+    }
+    internal void StopSymbolAnim(List<int> iconPos, int lineIndex)
+    {
+
+        for (int i = 0; i < iconPos.Count; i++)
+        {
+
+            slotMatrix[i].slotImages[socketController.initGameData.lines[lineIndex][iconPos[i]]].ResetParent();
+
+            // if (!animatingIcons.Any(x => x.pos == slotMatrix[pos[0]].slotImages[pos[1]].pos))
+            //     animatingIcons.Add(slotMatrix[pos[0]].slotImages[pos[1]]);
+        }
+
+    }
+
     internal void StopSymbolAnim(List<string> iconPos)
     {
 
@@ -333,11 +372,13 @@ public class SlotController : MonoBehaviour
             delay = 0.05f;
 
         alltweens[index].Pause();
-        
+
         slotTransform.localPosition = new Vector2(slotTransform.localPosition.x, initialPos + 265);
-        
-        alltweens[index] = slotTransform.DOLocalMoveY(initialPos, delay).SetEase(Ease.OutFlash).OnComplete(()=>{
-            if(!immediateStop && !GameManager.thunderFreeSpins){
+
+        alltweens[index] = slotTransform.DOLocalMoveY(initialPos, delay).SetEase(Ease.OutFlash).OnComplete(() =>
+        {
+            if (!immediateStop && !GameManager.thunderFreeSpins)
+            {
                 StopSpinAudioAction?.Invoke();
             }
         });
