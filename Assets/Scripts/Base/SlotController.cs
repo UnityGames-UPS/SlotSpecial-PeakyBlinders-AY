@@ -63,7 +63,23 @@ public class SlotController : MonoBehaviour
 
         }
     }
+    internal void PopulateSLotcoin(List<CoinsValue> coin = null)
+    {
 
+
+        if (coin != null)
+        {
+            for (int i = 0; i < coin.Count; i++)
+            {
+                Debug.Log("dev test" + coin[i].coinsvalue);
+                Debug.Log(coin[i].position[1] + "------------" + coin[i].position[0]);
+                // if (coin[i].coinsvalue == 13)
+                // {
+                slotMatrix[coin[i].position[1]].slotImages[coin[i].position[0]].SetCoin(coin[i].coinsvalue);
+                // }
+            }
+        }
+    }
     internal void PopulateSLotMatrix(List<List<int>> resultData, List<FrozenIndex> coins = null)
     {
         if (coins != null)
@@ -76,6 +92,7 @@ public class SlotController : MonoBehaviour
                 }
             }
         }
+
 
         // if (coins != null)
         // {

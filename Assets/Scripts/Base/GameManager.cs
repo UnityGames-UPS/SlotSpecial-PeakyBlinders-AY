@@ -535,7 +535,7 @@ public class GameManager : MonoBehaviour
         slotManager.CLearAllCoins();
         yield return new WaitUntil(() => SocketController.isResultdone);
         currentBalance = socketController.playerData.balance;
-        //  Helper.ConvertPayload(socketController.resultGameData.payload,socketController.initGameData.lines);
+
 
 
         if (!playBeforeStart)
@@ -553,7 +553,7 @@ public class GameManager : MonoBehaviour
 
 
         slotManager.PopulateSLotMatrix(Helper.ConvertStringMatrixToIntMatrix(socketController.resultGameData.matrix), socketController.resultGameData.features.bonus.frozenIndices);           //ashu
-
+        slotManager.PopulateSLotcoin(socketController.resultGameData.features.coinsValues);
         if (playBeforeEnd)
         {
             OnSpinStop?.Invoke();

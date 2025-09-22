@@ -31,7 +31,7 @@ public class SocketController : MonoBehaviour
     internal static bool isResultdone = false;
 
     private SocketManager manager;
-    private UIManager uiManager;
+    [SerializeField] private UIManager uiManager;
 
     // protected string nameSpace="game"; //BackendChange
     private Socket gameSocket; //BackendChanges
@@ -460,6 +460,7 @@ public class SocketController : MonoBehaviour
                     playerData = myData.player;
                     OnInit?.Invoke();
                     //     Debug.Log("init data" + JsonConvert.SerializeObject(initGameData));
+                    uiManager.RaycastBlocker.SetActive(false);
 #if UNITY_WEBGL && !UNITY_EDITOR
         JSManager.SendCustomMessage("OnEnter");
 #endif
@@ -575,14 +576,19 @@ public class Features
 
 
 
-
+    public List<CoinsValue> coinsValues { get; set; }
     public bool isArthurSpin { get; set; }
     public bool isTomSpin { get; set; }
     public bool isPollySpin { get; set; }
     public bool isThunderSpin { get; set; }
     public bool isGrandPrize { get; set; }
 }
-
+public class CoinsValue
+{
+    public List<int> position { get; set; }
+    public int coinsvalue { get; set; }
+    public string symbol { get; set; }
+}
 public class FreeSpin
 {
     public int freeSpinCount { get; set; }
