@@ -681,6 +681,12 @@ public class FrozenIndex
 
 
 
-
+[Serializable]
+public class AuthTokenData
+{
+    public string cookie;
+    public string socketURL;
+    public string nameSpace; //BackendChanges
+}
 
 //===================================================================

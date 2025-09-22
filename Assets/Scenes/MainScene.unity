@@ -11422,7 +11422,7 @@ MonoBehaviour:
   uiManager: {fileID: 377874625}
   JSManager: {fileID: 1737620606}
   TestSocketURI: http://localhost:5000/
-  testToken: 877dd6264b9640368e2a3c167f0eb839
+  testToken: 81f5be04d0e146e3ac30ce281394bca1
 --- !u!1 &502824392
 GameObject:
   m_ObjectHideFlags: 0
@@ -24581,7 +24581,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -38749,7 +38749,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 70.36296}
+  m_AnchoredPosition: {x: 78, y: 78}
   m_SizeDelta: {x: 1539.73, y: 882.27405}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1761068158
