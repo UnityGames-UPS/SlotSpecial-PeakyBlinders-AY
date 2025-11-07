@@ -54,7 +54,7 @@ public class GameManager : MonoBehaviour
     [Header("For FreeSpins")]
     [SerializeField] private double currentBalance;
     [SerializeField] private double currentTotalBet;
-    [SerializeField] private int betCounter = 0;
+    [SerializeField] internal int betCounter = 0;
 
     [SerializeField] private Button freeSpinStartButton;
 

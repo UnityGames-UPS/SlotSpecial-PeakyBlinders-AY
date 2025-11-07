@@ -11422,7 +11422,7 @@ MonoBehaviour:
   uiManager: {fileID: 377874625}
   JSManager: {fileID: 1737620606}
   TestSocketURI: http://localhost:5000/
-  testToken: 468e6d28ea024ec2b0c21e039ae208d3
+  testToken: 2484e77de49d46a6b93c24c027f3a096
 --- !u!1 &502824392
 GameObject:
   m_ObjectHideFlags: 0

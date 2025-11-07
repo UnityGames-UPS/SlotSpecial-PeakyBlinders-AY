@@ -10,6 +10,7 @@ using System.Text;
 public class UIManager : MonoBehaviour
 {
     [SerializeField] private SocketController socketManager;
+    [SerializeField] private GameManager slotManager;
     [Header("AutoSpin Popup")]
     [SerializeField] private Button AutoSpinButton;
     [SerializeField] private Button AutoSpinPopUpClose;
@@ -261,13 +262,14 @@ public class UIManager : MonoBehaviour
 
     internal void PopulateSymbolsPayout(UiData uIData, double currentBetPerLine)
     {
+        double multiplyer = socketManager.InitialData.bets[slotManager.betCounter];
         string text;
         for (int i = 0; i < SymbolsText.Length; i++)
         {
             text = "";
             for (int j = 0; j < uIData.paylines.symbols[i].multiplier.Count; j++)
             {
-                text += $"{5 - j}x - {uIData.paylines.symbols[i].multiplier[0]}x \n";
+                text += $"{5 - j}x - {uIData.paylines.symbols[i].multiplier[0] * multiplyer}";
             }
             SymbolsText[i].text = text;
         }
