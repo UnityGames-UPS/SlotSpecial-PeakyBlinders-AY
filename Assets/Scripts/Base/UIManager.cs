@@ -109,6 +109,13 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject gameButtonPanel;
     [SerializeField] private Transform freeSpinText;
 
+    [Header("Major mini text")]
+    [SerializeField] private TMP_Text Majortxt;
+    [SerializeField] private TMP_Text Minitxt;
+    [SerializeField] private TMP_Text Megatxt;
+    [SerializeField] private TMP_Text Grandtxt;
+
+
     [SerializeField]
     private Button m_AwakeGameButton;
 
@@ -260,16 +267,17 @@ public class UIManager : MonoBehaviour
         OpenPopup(ADPopup_Object);
     }
 
-    internal void PopulateSymbolsPayout(UiData uIData, double currentBetPerLine)
+    internal void PopulateSymbolsPayout(UiData uIData, double currentBetPerLine, Features features)
     {
-        double multiplyer = socketManager.InitialData.bets[slotManager.betCounter];
+        //double multiplyer = socketManager.InitialData.bets[slotManager.betCounter];
+        double multiplyer = currentBetPerLine;
         string text;
         for (int i = 0; i < SymbolsText.Length; i++)
         {
             text = "";
             for (int j = 0; j < uIData.paylines.symbols[i].multiplier.Count; j++)
             {
-                text += $"{5 - j}x - {uIData.paylines.symbols[i].multiplier[0] * multiplyer}";
+                text += $"{5 - j}x - {uIData.paylines.symbols[i].multiplier[j] * multiplyer}" + " \n";
             }
             SymbolsText[i].text = text;
         }
@@ -281,7 +289,7 @@ public class UIManager : MonoBehaviour
         Wild_Text.text = uIData.paylines.symbols[8].description.ToString();
 
         text = "";
-
+        SetMajorMiniText(features);
         // for (int i = 0; i < uIData.specialBonusSymbolMulipliers.Count; i++)                             // ashu helloo
         // {
         //     text = "";
@@ -310,7 +318,13 @@ public class UIManager : MonoBehaviour
 
 
 
-
+    void SetMajorMiniText(Features featuer)
+    {
+        Majortxt.text = featuer.majorMultiplier.ToString();
+        Minitxt.text = featuer.miniMultiplier.ToString();
+        Megatxt.text = featuer.megaMultiplier.ToString();
+        Grandtxt.text = featuer.grandMultiplier.ToString();
+    }
     internal void PopulateBets(List<double> bets, int totalLines, Action<int> onclick)
     {
 

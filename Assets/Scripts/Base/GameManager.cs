@@ -261,13 +261,13 @@ public class GameManager : MonoBehaviour
             payLineController.paylines.AddRange(socketController.initGameData.lines);
             if (totalBet_text) totalBet_text.text = currentTotalBet.ToString();
             uIManager.UpdatePlayerInfo(socketController.playerData);                                    //ashu
-            uIManager.PopulateSymbolsPayout(socketController.uIData, socketController.initGameData.bets[betCounter]);
+            uIManager.PopulateSymbolsPayout(socketController.uIData, socketController.initGameData.bets[betCounter], socketController.InitFeature);
             uIManager.PopulateBets(socketController.initGameData.bets, totalLies, OnBetChange);
             // Application.ExternalCall("window.parent.postMessage", "OnEnter", "*");
         }
         else
         {
-            uIManager.PopulateSymbolsPayout(socketController.uIData, totalLies);
+            uIManager.PopulateSymbolsPayout(socketController.uIData, socketController.initGameData.bets[betCounter], socketController.InitFeature);
         }
 
 
@@ -713,6 +713,7 @@ public class GameManager : MonoBehaviour
         if (totalBet_text) totalBet_text.text = currentTotalBet.ToString();
         // if (currentBalance < currentTotalBet)
         //     uIManager.LowBalPopup();
+        uIManager.PopulateSymbolsPayout(socketController.uIData, socketController.initGameData.bets[betCounter], socketController.InitFeature);
     }
 
 

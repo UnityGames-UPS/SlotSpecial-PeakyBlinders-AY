@@ -14,6 +14,7 @@ public class SocketController : MonoBehaviour
 
     public Player playerData = new Player();
     public UiData uIData = new UiData();
+    public Features InitFeature = new Features();
 
     public GameData initGameData = new GameData();
 
@@ -454,6 +455,7 @@ public class SocketController : MonoBehaviour
             case "initData":
                 {
                     uIData = myData.uiData;
+                    InitFeature = myData.features;
                     //  SocketModel.uIData.specialBonusSymbolMulipliers = resp["message"]["GameData"]["specialBonusSymbolMulipliers"].ToObject<List<SpecialSymbol>>();
                     initGameData = myData.gameData;
                     //initGameData.lines = myData.gameData.lines;

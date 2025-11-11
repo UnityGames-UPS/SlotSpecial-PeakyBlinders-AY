@@ -38,7 +38,6 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -9246,6 +9245,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   socketManager: {fileID: 500036492}
+  slotManager: {fileID: 830221914}
   AutoSpinButton: {fileID: 1752670619}
   AutoSpinPopUpClose: {fileID: 374088767}
   autoSpinCost: {fileID: 0}
@@ -9366,6 +9366,10 @@ MonoBehaviour:
   freeSpinPanel: {fileID: 703049919}
   gameButtonPanel: {fileID: 1480051153}
   freeSpinText: {fileID: 0}
+  Majortxt: {fileID: 341603255}
+  Minitxt: {fileID: 601243830}
+  Megatxt: {fileID: 1876269802}
+  Grandtxt: {fileID: 155027182}
   m_AwakeGameButton: {fileID: 742977646}
   playerCurrentWinning: {fileID: 576684260}
   playerBalance: {fileID: 1666685184}
@@ -11422,7 +11426,7 @@ MonoBehaviour:
   uiManager: {fileID: 377874625}
   JSManager: {fileID: 1737620606}
   TestSocketURI: http://localhost:5000/
-  testToken: 2484e77de49d46a6b93c24c027f3a096
+  testToken: 545b6f1867d543cb9aef75360537db0a
 --- !u!1 &502824392
 GameObject:
   m_ObjectHideFlags: 0
