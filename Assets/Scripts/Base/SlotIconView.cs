@@ -26,17 +26,18 @@ public class SlotIconView : MonoBehaviour
 
 
     internal void SetIcon(Sprite image, int id, int pos)
-    {       
+    {
         iconImage.sprite = image;
 
-        if(id!=13){
+        if (id != 13)
+        {
             text.text = "0";
             text.gameObject.SetActive(false);
         }
         this.id = id;
         this.pos = pos;
 
-        if (id == 9 || id==10 || id==11 || id==12)
+        if (id == 9 || id == 10 || id == 11 || id == 12)
         {
             this.activeanimation.rendererDelegate = this.iconImage;
         }
@@ -49,7 +50,7 @@ public class SlotIconView : MonoBehaviour
 
     internal void SetCoin(double value)
     {
-        text.text = value.ToString()+"X";
+        text.text = value.ToString() + "X";
         text.gameObject.SetActive(true);
     }
 
@@ -73,15 +74,35 @@ public class SlotIconView : MonoBehaviour
         iconImage.material = null;
 
     }
+    // internal void StartAnim(List<Sprite> animSprite, int id)
+    // {
+    //     activeanimation.textureArray.Clear();
+    //     activeanimation.textureArray.AddRange(animSprite);
+    //     activeanimation.AnimationSpeed = animSprite.Count / 2 + 0.5f;
+    //     if(id <=8 || id >= 13)
+    //     iconBorderImage.gameObject.SetActive(true);
+    //     else
+    //     iconBorderImage.gameObject.SetActive(false);
+
+    //     activeanimation.StartAnimation();
+    // }
     internal void StartAnim(List<Sprite> animSprite, int id)
     {
+        if (animSprite == null || animSprite.Count == 0)
+        {
+            Debug.LogWarning("ID " + id + " animation sprites EMPTY!");
+            iconBorderImage.gameObject.SetActive(false);
+            return;
+        }
+
         activeanimation.textureArray.Clear();
         activeanimation.textureArray.AddRange(animSprite);
-        activeanimation.AnimationSpeed = animSprite.Count / 2 + 0.5f;
-        if(id <=8 || id >= 13)
-        iconBorderImage.gameObject.SetActive(true);
+        activeanimation.AnimationSpeed = animSprite.Count / 2f + 0.5f;
+
+        if (id <= 8 || id >= 13)
+            iconBorderImage.gameObject.SetActive(true);
         else
-        iconBorderImage.gameObject.SetActive(false);
+            iconBorderImage.gameObject.SetActive(false);
 
         activeanimation.StartAnimation();
     }
@@ -90,7 +111,7 @@ public class SlotIconView : MonoBehaviour
     {
 
         activeanimation.StopAnimation();
-        activeanimation.textureArray.Clear();
+        // activeanimation.textureArray.Clear();
         // activeanimation.textureArray.Add(firstSprite);
 
     }
