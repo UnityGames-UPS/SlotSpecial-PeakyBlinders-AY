@@ -26618,7 +26618,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Triggering Arther freespin awards _ free spins. During free spins jack-ace
+  m_text: 'Triggering Arther freespin awards 10 free spins. During free spins jack-ace
     symbol are removed from the reel.
 
 '
@@ -32010,8 +32010,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 502824394}
   m_HandleRect: {fileID: 502824393}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.14285713
+  m_Value: 1.0000001
+  m_Size: 0.14285715
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -36041,8 +36041,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Triggering Polly freespin awards _ free spins. During free spins _ or more
-    adjacent rows shows same symbols.
+  m_text: Triggering Polly freespin awards 10 free spins. During free spins _ or
+    more adjacent rows shows same symbols.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 416e3a3b8948144f9be7d617ee838075, type: 2}
   m_sharedMaterial: {fileID: 3637527231121802250, guid: 416e3a3b8948144f9be7d617ee838075, type: 2}
@@ -44300,7 +44300,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Triggering Tommy freespin awards _ free spins. During free spins 3 adjacent
+  m_text: 'Triggering Tommy freespin awards 10 free spins. During free spins 3 adjacent
     reel change in to a collossal reel consisting of 3x3 symbol.
 
 '
