@@ -11,6 +11,7 @@ public class UIManager : MonoBehaviour
 {
     [SerializeField] private SocketController socketManager;
     [SerializeField] private GameManager slotManager;
+    [SerializeField] private JSFunctCalls jsFunctCalls;
     [Header("AutoSpin Popup")]
     [SerializeField] private Button AutoSpinButton;
     [SerializeField] private Button AutoSpinPopUpClose;
@@ -141,7 +142,17 @@ public class UIManager : MonoBehaviour
     {
         //if (spalsh_screen) spalsh_screen.SetActive(true);
         //StartCoroutine(LoadingRoutine());
+        if (jsFunctCalls != null)
+            jsFunctCalls.RegisterVisibilityListener(gameObject.name);
         SimulateClickByDefault();
+    }
+
+    public void OnFocusChanged(string value)
+    {
+        bool focused = value == "1";
+        Debug.Log("UNITY FOCUS CHANGED: " + value + " (focused: " + focused + ")");
+        audioController?.SetMuteAll(!focused);
+        socketManager?.HandleFocusChange(focused);
     }
 
     private void SimulateClickByDefault()

@@ -245,6 +245,16 @@ public class GameManager : MonoBehaviour
 
 
     }
+    internal void UpdateBalanceDisplay(double newBalance)
+    {
+        currentBalance = newBalance;
+        uIManager.UpdatePlayerInfo(socketController.playerData);
+        if (currentBalance < currentTotalBet)
+        {
+            uIManager.LowBalPopup();
+        }
+    }
+
     void InitGame()
     {
         if (!initiated)

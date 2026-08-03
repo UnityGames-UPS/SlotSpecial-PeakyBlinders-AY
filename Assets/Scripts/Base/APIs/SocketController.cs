@@ -33,6 +33,7 @@ public class SocketController : MonoBehaviour
 
   private SocketManager manager;
   [SerializeField] private UIManager uiManager;
+  [SerializeField] private GameManager slotManager;
 
   // protected string nameSpace="game"; //BackendChange
   private Socket gameSocket; //BackendChanges
@@ -74,6 +75,13 @@ public class SocketController : MonoBehaviour
   private int missedPongs = 0;
   private const int MaxMissedPongs = 5;
   private Coroutine PingRoutine; //Back2 end
+
+  private bool hasFocus = true;
+  private float focusLostTime = 0f;
+  private Coroutine focusCheckRoutine;
+  private float maxBackgroundTime = 60f;
+  private bool isExiting = false;
+  private bool isBeingDestroyed = false;
 
   // protected string nameSpace = "game";
   private void Start()
@@ -188,6 +196,7 @@ public class SocketController : MonoBehaviour
     gameSocket.On<string>("alert", OnSocketAlert);
     gameSocket.On<string>("pong", OnPongReceived); //Back2 Start
     gameSocket.On<string>("AnotherDevice", OnSocketOtherDevice); //BackendChanges Finish
+    gameSocket.On<string>("balance:sync", OnBalanceSync);
     manager.Open();
   }
 
@@ -243,12 +252,9 @@ public class SocketController : MonoBehaviour
   } //Back2 end
   private void OnPongReceived(string data) //Back2 Start
   {
-    Debug.Log("✅ Received pong from server.");
     waitingForPong = false;
     missedPongs = 0;
     lastPongTime = Time.time;
-    Debug.Log($"⏱️ Updated last pong time: {lastPongTime}");
-    Debug.Log($"📦 Pong payload: {data}");
   } //Back2 end
 
   private void OnError(string response)
@@ -295,6 +301,63 @@ public class SocketController : MonoBehaviour
     uiManager.ADfunction();
   }
 
+  private void OnBalanceSync(string data)
+  {
+    BalanceSyncPayload syncPayload = JsonConvert.DeserializeObject<BalanceSyncPayload>(data);
+    if (syncPayload == null) return;
+
+    playerData.balance = syncPayload.balance;
+    slotManager?.UpdateBalanceDisplay(syncPayload.balance);
+  }
+
+  internal void HandleFocusChange(bool focus)
+  {
+    hasFocus = focus;
+    if (!focus)
+    {
+      focusLostTime = Time.time;
+      if (focusCheckRoutine == null && !isExiting && !isBeingDestroyed)
+        focusCheckRoutine = StartCoroutine(FocusTimeoutCheck());
+    }
+    else if (focusCheckRoutine != null)
+    {
+      StopCoroutine(focusCheckRoutine);
+      focusCheckRoutine = null;
+    }
+  }
+
+  private IEnumerator FocusTimeoutCheck()
+  {
+    while (!hasFocus && !isExiting && !isBeingDestroyed)
+    {
+      if (Time.time - focusLostTime >= maxBackgroundTime)
+      {
+        Debug.LogWarning("[SOCKET] Background timeout — closing connection");
+        isConnected = false;
+        ResetPingRoutine();
+
+        if (manager != null)
+        {
+          try { manager.Close(); }
+          catch (Exception e) { Debug.LogWarning($"[SOCKET] Focus close error: {e.Message}"); }
+        }
+
+        uiManager.DisconnectionPopup();
+        focusCheckRoutine = null;
+        yield break;
+      }
+
+      yield return new WaitForSecondsRealtime(1f);
+    }
+
+    focusCheckRoutine = null;
+  }
+
+  private void OnDestroy()
+  {
+    isBeingDestroyed = true;
+  }
+
   private void SendPing() //Back2 Start
   {
     ResetPingRoutine();
@@ -317,8 +380,6 @@ public class SocketController : MonoBehaviour
   {
     while (true)
     {
-      Debug.Log($"🟡 PingCheck | waitingForPong: {waitingForPong}, missedPongs: {missedPongs}, timeSinceLastPong: {Time.time - lastPongTime}");
-
       if (missedPongs == 0)
       {
         uiManager.CheckAndClosePopups();
@@ -346,7 +407,6 @@ public class SocketController : MonoBehaviour
       // Send next ping
       waitingForPong = true;
       lastPongTime = Time.time;
-      Debug.Log("📤 Sending ping...");
       SendDataWithNamespace("ping");
       yield return new WaitForSeconds(pingInterval);
     }
@@ -422,6 +482,7 @@ public class SocketController : MonoBehaviour
 
   internal IEnumerator CloseSocket() //Back2 Start
   {
+    isExiting = true;
     uiManager.RaycastBlocker.SetActive(true);
     ResetPingRoutine();
 
@@ -624,6 +685,12 @@ public class Paylines
 public class Player
 {
   public double balance { get; set; }
+}
+
+[Serializable]
+public class BalanceSyncPayload
+{
+  public double balance;
 }
 public class Symbol
 {

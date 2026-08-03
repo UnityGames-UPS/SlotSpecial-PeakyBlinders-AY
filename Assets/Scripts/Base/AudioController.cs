@@ -24,9 +24,13 @@ public class AudioController : MonoBehaviour
     [SerializeField] private AudioClip BonusBg_Audio;
     [SerializeField] private AudioClip ByTheOrder;
 
+    private List<AudioSource> allSources;
+    private readonly Dictionary<AudioSource, bool> preFocusMuteState = new Dictionary<AudioSource, bool>();
+    private bool isForceMuted = false;
 
     private void Awake()
     {
+        allSources = new List<AudioSource> { bg_adudio, audioPlayer_wl, audioPlayer_button, audioPlayer_spin_stop, WinningSound };
         playBgAudio();
         //if (bg_adudio) bg_adudio.Play();
         //audioPlayer_button.clip = clips[clips.Length - 1];
@@ -74,25 +78,26 @@ public class AudioController : MonoBehaviour
 
     private void OnApplicationFocus(bool focus)
     {
-        if (!focus)
+        SetMuteAll(!focus);
+    }
+
+    internal void SetMuteAll(bool forceMute)
+    {
+        if (forceMute == isForceMuted) return;
+        isForceMuted = forceMute;
+
+        foreach (var source in allSources)
         {
-
-            bg_adudio.Pause();
-            audioPlayer_wl.Pause();
-            audioPlayer_button.Pause();
-            audioPlayer_spin_stop.Pause();
-            WinningSound.Pause();
-
-        }
-        else
-        {
-            bg_adudio.UnPause();
-            audioPlayer_wl.UnPause();
-            audioPlayer_button.UnPause();
-            audioPlayer_spin_stop.UnPause();
-            WinningSound.UnPause();
-
-
+            if (source == null) continue;
+            if (forceMute)
+            {
+                preFocusMuteState[source] = source.mute;
+                source.mute = true;
+            }
+            else
+            {
+                source.mute = preFocusMuteState.TryGetValue(source, out bool prevMuted) ? prevMuted : source.mute;
+            }
         }
     }
 
@@ -165,27 +170,34 @@ public class AudioController : MonoBehaviour
         switch (type)
         {
             case "bg":
-                bg_adudio.mute = toggle;
+                SetSourceMute(bg_adudio, toggle);
                 break;
             case "button":
-                audioPlayer_button.mute = toggle;
-                audioPlayer_spin_stop.mute = toggle;
+                SetSourceMute(audioPlayer_button, toggle);
+                SetSourceMute(audioPlayer_spin_stop, toggle);
                 break;
             case "wl":
-                audioPlayer_wl.mute = toggle;
-                WinningSound.mute=toggle;
+                SetSourceMute(audioPlayer_wl, toggle);
+                SetSourceMute(WinningSound, toggle);
                 break;
             case "all":
-                bg_adudio.mute = toggle;
-                audioPlayer_button.mute = toggle;
-                audioPlayer_spin_stop.mute = toggle;
-                audioPlayer_wl.mute = toggle;
-                WinningSound.mute=toggle;
+                SetSourceMute(bg_adudio, toggle);
+                SetSourceMute(audioPlayer_button, toggle);
+                SetSourceMute(audioPlayer_spin_stop, toggle);
+                SetSourceMute(audioPlayer_wl, toggle);
+                SetSourceMute(WinningSound, toggle);
                 break;
 
 
 
         }
+    }
+
+    private void SetSourceMute(AudioSource source, bool toggle)
+    {
+        if (source == null) return;
+        source.mute = toggle;
+        if (isForceMuted) preFocusMuteState[source] = toggle;
     }
 
 }
