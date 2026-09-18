@@ -31225,7 +31225,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Trying to reconnect...
+  m_text: CONNECTION LOST
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 993ff116ce74549679268f1d9a7861ce, type: 2}
   m_sharedMaterial: {fileID: -630791040658660908, guid: 993ff116ce74549679268f1d9a7861ce, type: 2}
